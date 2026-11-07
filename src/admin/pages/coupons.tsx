@@ -19,7 +19,7 @@ import { HeroBanner } from "@/components/hero-banner";
 import { PencilIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import { ProductPhoto } from "@/components/ui";
 import { cx } from "@/lib/cx";
-import { dbActions, StorageFullError, useCategories, useCoupons, useHero, useProducts } from "@/lib/db";
+import { dbActions, errorMessage, useCategories, useCoupons, useHero, useProducts } from "@/lib/db";
 import { brl } from "@/lib/format";
 import { useTitle } from "@/lib/title";
 
@@ -68,7 +68,7 @@ function couponState(c: Coupon): { label: string; tone: "ok" | "neutral" | "dang
 function CouponsTab() {
   const coupons = useCoupons();
   const [editing, setEditing] = useState<Coupon | "new" | null>(null);
-  const { flash, node } = useFlash();
+  const { flash, run, node } = useFlash();
 
   return (
     <>
@@ -117,7 +117,7 @@ function CouponsTab() {
                   <div className="flex items-center gap-1">
                     <Toggle
                       checked={c.active}
-                      onChange={(v) => dbActions.saveCoupon({ ...c, active: v })}
+                      onChange={(v) => void run(dbActions.saveCoupon({ ...c, active: v }), v ? `${c.code} ativo` : `${c.code} pausado`)}
                       label={<span className="sr-only">{c.active ? "Pausar" : "Ativar"} {c.code}</span>}
                     />
                     <button
@@ -133,8 +133,7 @@ function CouponsTab() {
                       aria-label={`Excluir ${c.code}`}
                       onClick={() => {
                         if (window.confirm(`Excluir o cupom ${c.code}?`)) {
-                          dbActions.deleteCoupon(c.id);
-                          flash("Cupom excluído");
+                          void run(dbActions.deleteCoupon(c.id), "Cupom excluído");
                         }
                       }}
                       className="flex size-9 items-center justify-center rounded-full text-error hover:bg-error-tint"
@@ -172,9 +171,11 @@ function CouponForm({
   const [limit, setLimit] = useState(coupon?.usageLimit ? String(coupon.usageLimit) : "");
   const [active, setActive] = useState(coupon?.active ?? true);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
-  function submit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
+    if (saving) return;
     const er: Record<string, string> = {};
     const c = code.trim().toUpperCase();
     if (!/^[A-Z0-9_-]{3,20}$/.test(c)) er.code = "Use de 3 a 20 letras ou números, sem espaços.";
@@ -187,7 +188,9 @@ function CouponForm({
     if (l !== null && !(Number.isInteger(l) && l > 0)) er.limit = "Número inteiro maior que zero.";
     setErrors(er);
     if (Object.keys(er).length) return;
-    dbActions.saveCoupon({
+    setSaving(true);
+    try {
+      await dbActions.saveCoupon({
       id: coupon?.id,
       code: c,
       type,
@@ -197,8 +200,13 @@ function CouponForm({
       usageLimit: l,
       active,
       used: coupon?.used,
-    });
-    onDone(coupon ? "Cupom atualizado" : "Cupom criado");
+      });
+      onDone(coupon ? "Cupom atualizado" : "Cupom criado");
+    } catch (err) {
+      setErrors({ save: errorMessage(err) });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -248,8 +256,9 @@ function CouponForm({
         <div className="sm:col-span-2 lg:col-span-3">
           <Toggle checked={active} onChange={setActive} label="Cupom ativo" />
         </div>
+        {errors.save && <p className="text-[13px] font-medium text-error sm:col-span-2 lg:col-span-3">{errors.save}</p>}
         <div className="flex gap-2 sm:col-span-2 lg:col-span-3">
-          <Button type="submit">{coupon ? "Salvar cupom" : "Criar cupom"}</Button>
+          <Button type="submit" disabled={saving}>{saving ? "Salvando…" : coupon ? "Salvar cupom" : "Criar cupom"}</Button>
           <Button variant="ghost" onClick={() => onDone()}>
             Cancelar
           </Button>
@@ -281,15 +290,15 @@ function HeroEditor() {
   const dirty = JSON.stringify(hero) !== JSON.stringify(saved);
   const set = <K extends keyof Hero>(k: K, v: Hero[K]) => setHero((h) => ({ ...h, [k]: v }));
 
-  function save() {
+  async function save() {
     if (!hero.title.trim()) return setError("O banner precisa de um título.");
     if (!hero.cta.trim()) return setError("Escreva o texto do botão.");
     try {
-      dbActions.saveHero({ ...hero, title: hero.title.trim(), cta: hero.cta.trim(), tag: hero.tag.trim() });
+      await dbActions.saveHero({ ...hero, title: hero.title.trim(), cta: hero.cta.trim(), tag: hero.tag.trim() });
       setError("");
       flash("Banner salvo");
     } catch (e) {
-      setError(e instanceof StorageFullError ? e.message : "Não foi possível salvar.");
+      setError(errorMessage(e));
     }
   }
 
@@ -380,7 +389,7 @@ function HeroEditor() {
 
 function PromoPrices() {
   const products = useProducts();
-  const { flash, node } = useFlash();
+  const { run, node } = useFlash();
   const list = products.filter((p) => p.active);
 
   return (
@@ -395,7 +404,7 @@ function PromoPrices() {
             <PromoRow
               key={`${p.id}-${p.price}-${p.oldPrice}`}
               product={p}
-              onSaved={(msg) => flash(msg)}
+              onSave={run}
             />
           ))}
         </ul>
@@ -409,10 +418,10 @@ function PromoPrices() {
 
 function PromoRow({
   product: p,
-  onSaved,
+  onSave,
 }: {
   product: ReturnType<typeof useProducts>[number];
-  onSaved: (msg: string) => void;
+  onSave: (action: Promise<unknown>, okText: string) => Promise<boolean>;
 }) {
   const onSale = discountPercent(p) > 0;
   const normal = onSale ? (p.oldPrice as number) : p.price;
@@ -427,8 +436,10 @@ function PromoRow({
       setError(`Precisa ser menor que ${brl(normal)}.`);
       return;
     }
-    dbActions.saveProduct({ ...p, price: promo ?? normal, oldPrice: promo !== null ? normal : null });
-    onSaved(promo !== null ? `${p.name} em promoção` : `${p.name} saiu da promoção`);
+    void onSave(
+      dbActions.saveProduct({ ...p, price: promo ?? normal, oldPrice: promo !== null ? normal : null }),
+      promo !== null ? `${p.name} em promoção` : `${p.name} saiu da promoção`,
+    );
   }
 
   return (

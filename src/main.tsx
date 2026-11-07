@@ -1,6 +1,4 @@
-import "@fontsource-variable/geist";
-import "@fontsource-variable/plus-jakarta-sans";
-import "@fontsource/geist-mono/400.css";
+import "./fonts.css";
 import "./index.css";
 
 import { StrictMode } from "react";

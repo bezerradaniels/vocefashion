@@ -86,7 +86,7 @@ export function BagButton({
         <span
           aria-hidden="true"
           className={cx(
-            "absolute box-border rounded-full bg-copper px-1 text-center text-[10px] font-semibold text-white",
+            "absolute box-border rounded-full bg-copper-ink px-1 text-center text-[10px] font-semibold text-white",
             overlay
               ? "top-[5px] right-1 h-4 min-w-4 leading-4"
               : "-top-0.5 -right-[3px] h-[17px] min-w-[17px] leading-[17px]",
@@ -102,11 +102,14 @@ export function BagButton({
 /** Seletor de quantidade (− 1 +). Quantidade 0 remove o item. */
 export function QtyStepper({
   qty,
+  max,
   label,
   onDec,
   onInc,
 }: {
   qty: number;
+  /** Estoque do tamanho: o "+" trava ao chegar nele. */
+  max?: number;
   label: string;
   onDec: () => void;
   onInc: () => void;
@@ -128,7 +131,8 @@ export function QtyStepper({
         type="button"
         aria-label={`Aumentar quantidade de ${label}`}
         onClick={onInc}
-        className="size-[34px] text-[18px] text-charcoal"
+        disabled={max !== undefined && qty >= max}
+        className="size-[34px] text-[18px] text-charcoal disabled:text-out-fg"
       >
         +
       </button>

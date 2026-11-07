@@ -14,7 +14,7 @@ export function CategoriesPage() {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
-  const { flash, node } = useFlash();
+  const { run, node } = useFlash();
 
   const exists = (n: string, except?: string) =>
     categories.some((c) => c.id !== except && c.name.trim().toLowerCase() === n.trim().toLowerCase());
@@ -29,18 +29,16 @@ export function CategoriesPage() {
     const base = slugify(n) || "categoria";
     let id = base;
     for (let i = 2; categories.some((c) => c.id === id); i++) id = `${base}-${i}`;
-    dbActions.saveCategory({ id, name: n, active: true });
     setName("");
-    flash("Categoria criada");
+    void run(dbActions.saveCategory({ id, name: n, active: true }), "Categoria criada");
   }
 
   function rename(id: string) {
     const n = editName.trim();
     if (n.length < 2 || exists(n, id)) return;
     const c = categories.find((x) => x.id === id);
-    if (c) dbActions.saveCategory({ ...c, name: n });
     setEditing(null);
-    flash("Nome atualizado");
+    if (c) void run(dbActions.saveCategory({ ...c, name: n }), "Nome atualizado");
   }
 
   function remove(id: string, label: string, count: number) {
@@ -49,8 +47,7 @@ export function CategoriesPage() {
       return;
     }
     if (!window.confirm(`Excluir a categoria "${label}"?`)) return;
-    dbActions.deleteCategory(id);
-    flash("Categoria excluída");
+    void run(dbActions.deleteCategory(id), "Categoria excluída");
   }
 
   return (
@@ -91,7 +88,7 @@ export function CategoriesPage() {
                       type="button"
                       aria-label={`Subir ${c.name}`}
                       disabled={i === 0}
-                      onClick={() => dbActions.moveCategory(c.id, -1)}
+                      onClick={() => void run(dbActions.moveCategory(c.id, -1), "")}
                       className="flex size-7 items-center justify-center rounded-full hover:bg-icon-btn disabled:opacity-25"
                     >
                       <ArrowUpIcon size={16} />
@@ -100,7 +97,7 @@ export function CategoriesPage() {
                       type="button"
                       aria-label={`Descer ${c.name}`}
                       disabled={i === categories.length - 1}
-                      onClick={() => dbActions.moveCategory(c.id, 1)}
+                      onClick={() => void run(dbActions.moveCategory(c.id, 1), "")}
                       className="flex size-7 items-center justify-center rounded-full hover:bg-icon-btn disabled:opacity-25"
                     >
                       <ArrowUpIcon size={16} className="rotate-180" />
@@ -144,7 +141,7 @@ export function CategoriesPage() {
                     <div className="flex items-center gap-1">
                       <Toggle
                         checked={c.active}
-                        onChange={(v) => dbActions.saveCategory({ ...c, active: v })}
+                        onChange={(v) => void run(dbActions.saveCategory({ ...c, active: v }), v ? "Categoria visível na loja" : "Categoria oculta da loja")}
                         label={<span className="hidden text-[13px] sm:inline">{c.active ? "Na loja" : "Oculta"}</span>}
                       />
                       <button

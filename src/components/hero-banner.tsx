@@ -36,7 +36,7 @@ export function HeroBanner({
     >
       <div className="@container flex min-w-0 flex-col items-start gap-2 overflow-hidden py-3 pr-2.5 pl-3">
         {hero.tag && (
-          <span className="flex-none rounded-full bg-white px-2.5 py-1 text-[11px] leading-none font-semibold tracking-[.06em] whitespace-nowrap text-copper uppercase">
+          <span className="flex-none rounded-full bg-white px-2.5 py-1 text-[11px] leading-none font-semibold tracking-[.06em] whitespace-nowrap text-copper-ink uppercase">
             {hero.tag}
           </span>
         )}

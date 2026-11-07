@@ -56,7 +56,7 @@ export function FloatingField({
         className={cx(
           "pointer-events-none absolute left-[15px] transition-all duration-150",
           up ? "top-2 text-[11px] font-medium" : "top-[18px] text-[15px] font-normal",
-          tone === "error" ? "text-error" : tone === "focus" ? "text-copper" : "text-muted",
+          tone === "error" ? "text-error" : tone === "focus" ? "text-copper-ink" : "text-muted",
         )}
       >
         {label}

@@ -126,10 +126,16 @@ export function BagDrawer() {
                       {l.product.name}
                     </Link>
                     <span className="text-[12px] text-muted">Tamanho {l.size}</span>
+                    {l.qty > l.stock && (
+                      <span className="text-[12px] font-medium text-error">
+                        {l.stock ? `Só ${l.stock} em estoque: diminua a quantidade` : "Esgotou: remova da sacola"}
+                      </span>
+                    )}
                     <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
                       <span className="text-[15px] font-bold">{brl(l.product.price * l.qty)}</span>
                       <QtyStepper
                         qty={l.qty}
+                        max={l.stock}
                         label={l.product.name}
                         onDec={() => actions.changeQty(l.index, -1)}
                         onInc={() => actions.changeQty(l.index, 1)}
@@ -167,7 +173,7 @@ export function BagDrawer() {
                 <span className="text-[20px] font-bold">{brl(subtotal)}</span>
               </div>
               {pix.enabled && pix.discountPercent > 0 && (
-                <span className="-mt-2.5 self-end text-[13px] font-semibold text-copper">
+                <span className="-mt-2.5 self-end text-[13px] font-semibold text-copper-ink">
                   ou {brl(pixTotal)} no Pix
                 </span>
               )}

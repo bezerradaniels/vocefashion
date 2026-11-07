@@ -152,7 +152,7 @@ function NavItem({
       {to === "/admin/pedidos" && waiting > 0 && (
         <span
           title={`${waiting} aguardando pagamento`}
-          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-copper px-1.5 text-[11px] font-semibold text-white"
+          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-copper-ink px-1.5 text-[11px] font-semibold text-white"
         >
           {waiting}
         </span>
@@ -167,8 +167,7 @@ function LogoutButton() {
     <button
       type="button"
       onClick={() => {
-        logout();
-        navigate("/admin/login", { replace: true });
+        void logout().then(() => navigate("/admin/login", { replace: true }));
       }}
       className="flex h-11 items-center gap-3 rounded-full px-3 text-left text-[14px] font-medium text-body-2 hover:bg-icon-btn"
     >

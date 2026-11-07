@@ -7,13 +7,15 @@
   --color-copper-hover: #a6654a;
   --color-copper-active: #94583f;
   --color-copper-tint: #faf4f1;
+  /* Cobre escuro para texto pequeno e selos com texto branco: contraste ≥ 4,5 (WCAG AA). */
+  --color-copper-ink: #94583f;
   --color-alabaster: #f8f8f8;
   --color-line: #e5e5e5;
   --color-chip: #f1efec;
   --color-icon-btn: #f3f2f0;
   --color-muted: #707070;
   --color-body-2: #4a4a4a;
-  --color-strike: #8a8a8a;
+  --color-strike: #767676;
   --color-disabled-bg: #ededed;
   --color-disabled-fg: #8a8a8a;
   --color-out-bg: #fafafa;
@@ -41,7 +43,8 @@
 @theme {
   --font-sans: "Geist Variable", system-ui, sans-serif;
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
+  /* Mono só aparece em placeholders e códigos de cupom: fonte do sistema basta. */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 @utility no-scrollbar {

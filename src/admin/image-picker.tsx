@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from "react";
-import { fileToResizedDataUrl } from "@/admin/image";
+import { dbActions } from "@/lib/db";
 import { ImageIcon, TrashIcon } from "@/components/icons";
 import { cx } from "@/lib/cx";
 import { assetUrl } from "@/lib/asset";
@@ -34,7 +34,7 @@ export function ImagePicker({
     try {
       const room = max - value.length;
       const picked = Array.from(files).slice(0, room);
-      const urls = await Promise.all(picked.map((f) => fileToResizedDataUrl(f, resize)));
+      const urls = await Promise.all(picked.map((f) => dbActions.uploadImage(f, resize)));
       onChange([...value, ...urls]);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Não foi possível carregar a imagem.");

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { login, useAdminSession } from "@/admin/auth";
 import { DEMO_ADMIN } from "@/admin/demo-credentials";
+import { DEMO_MODE } from "@/lib/db";
 import { Button, TextField } from "@/admin/ui";
 import { useSettings } from "@/lib/db";
 import { useTitle } from "@/lib/title";
@@ -18,17 +19,22 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   if (session) return <Navigate to={from} replace />;
 
-  function submit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
+    if (busy) return;
     if (!email.trim() || !password) {
       setError("Preencha e-mail e senha.");
       return;
     }
-    if (login(email, password)) navigate(from, { replace: true });
-    else setError("E-mail ou senha incorretos.");
+    setBusy(true);
+    const err = await login(email, password);
+    setBusy(false);
+    if (err) setError(err);
+    else navigate(from, { replace: true });
   }
 
   return (
@@ -78,27 +84,29 @@ export function LoginPage() {
               {error}
             </p>
           )}
-          <Button type="submit" className="mt-1 w-full">
-            Entrar
+          <Button type="submit" className="mt-1 w-full" disabled={busy}>
+            {busy ? "Entrando…" : "Entrar"}
           </Button>
         </form>
 
-        <div className="flex flex-col items-center gap-2 text-center">
-          <p className="text-[13px] text-muted">
-            Modo demonstração: não há servidor ainda, então o acesso é de teste.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail(DEMO_ADMIN.email);
-              setPassword(DEMO_ADMIN.password);
-              setError("");
-            }}
-            className="text-[14px] font-semibold text-charcoal underline underline-offset-[3px]"
-          >
-            Preencher acesso de demonstração
-          </button>
-        </div>
+        {DEMO_MODE && (
+          <div className="flex flex-col items-center gap-2 text-center">
+            <p className="text-[13px] text-muted">
+              Modo demonstração: não há servidor ainda, então o acesso é de teste.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail(DEMO_ADMIN.email);
+                setPassword(DEMO_ADMIN.password);
+                setError("");
+              }}
+              className="text-[14px] font-semibold text-charcoal underline underline-offset-[3px]"
+            >
+              Preencher acesso de demonstração
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

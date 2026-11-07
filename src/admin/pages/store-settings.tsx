@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { SEED_SETTINGS, type Settings, type ShippingMethod } from "@/data/catalog";
+import { formatMinutes, SEED_SETTINGS, type Settings, type ShippingMethod } from "@/data/catalog";
 import { moneyInput, parseMoney } from "@/admin/image";
 import { ImagePicker } from "@/admin/image-picker";
 import { Button, Card, PageHeader, Select, TextArea, TextField, Toggle } from "@/admin/ui";
 import { useFlash } from "@/admin/use-flash";
 import { PlusIcon, TrashIcon } from "@/components/icons";
-import { dbActions, StorageFullError, useSettings } from "@/lib/db";
+import { dbActions, DEMO_MODE, errorMessage, useSettings } from "@/lib/db";
 import { digits, formatPhone } from "@/lib/format";
 import { useTitle } from "@/lib/title";
 
@@ -34,6 +34,7 @@ export function StoreSettingsPage() {
   const [form, setForm] = useState<Form>(() => toForm(saved));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { flash, node } = useFlash();
+  const [saving, setSaving] = useState(false);
   const dirty = JSON.stringify(form) !== JSON.stringify(toForm(saved));
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => {
@@ -46,7 +47,8 @@ export function StoreSettingsPage() {
   const setMethod = (i: number, patch: Partial<MethodForm>) =>
     setShip({ methods: form.shipping.methods.map((m, k) => (k === i ? { ...m, ...patch } : m)) });
 
-  function save() {
+  async function save() {
+    if (saving) return;
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Informe o nome da loja.";
     const phone = digits(form.phone);
@@ -55,6 +57,8 @@ export function StoreSettingsPage() {
     if (ig && !/^[A-Za-z0-9._]{1,30}$/.test(ig)) e.instagram = "Só letras, números, ponto e _.";
     if (!form.payments.pix.enabled && !form.payments.card.enabled) e.payments = "Deixe pelo menos uma forma de pagamento ativa.";
     if (form.payments.pix.discountPercent < 0 || form.payments.pix.discountPercent > 30) e.pix = "Entre 0% e 30%.";
+    const expiry = form.payments.pix.expiryMinutes;
+    if (!Number.isInteger(expiry) || expiry < 0 || expiry > 10080) e.pixExpiry = "Entre 0 e 10080 minutos (7 dias).";
     if (form.payments.card.installments < 1 || form.payments.card.installments > 12) e.card = "Entre 1 e 12 parcelas.";
     if (!/^\d{1,8}$/.test(form.shipping.localCepPrefix)) e.cep = "Use só números (ex.: 476).";
 
@@ -71,8 +75,9 @@ export function StoreSettingsPage() {
 
     setErrors(e);
     if (Object.keys(e).length) return;
+    setSaving(true);
     try {
-      dbActions.saveSettings({
+      await dbActions.saveSettings({
         ...form,
         name: form.name.trim(),
         phone,
@@ -81,7 +86,9 @@ export function StoreSettingsPage() {
       });
       flash("Dados da loja salvos");
     } catch (err) {
-      setErrors({ save: err instanceof StorageFullError ? err.message : "Não foi possível salvar." });
+      setErrors({ save: errorMessage(err) });
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -180,6 +187,24 @@ export function StoreSettingsPage() {
                 error={errors.pix}
                 onChange={(e) => setPay({ discountPercent: Number(e.target.value) }, "pix")}
               />
+              <Select
+                label="Prazo para pagar o Pix"
+                disabled={!form.payments.pix.enabled}
+                value={String(form.payments.pix.expiryMinutes ?? 0)}
+                error={errors.pixExpiry}
+                hint="Depois do prazo, o pedido é cancelado sozinho e as peças voltam para a loja."
+                onChange={(e) => setPay({ expiryMinutes: Number(e.target.value) }, "pix")}
+              >
+                {[...new Set([30, 60, 120, 240, 720, 1440, 2880, form.payments.pix.expiryMinutes ?? 0])]
+                  .filter((m) => m > 0)
+                  .sort((a, b) => a - b)
+                  .map((m) => (
+                    <option key={m} value={m}>
+                      {formatMinutes(m)}
+                    </option>
+                  ))}
+                <option value={0}>Não cancelar sozinho</option>
+              </Select>
             </div>
             <div className="flex flex-col gap-3 rounded-card border border-line p-4">
               <Toggle
@@ -309,6 +334,7 @@ export function StoreSettingsPage() {
           </Button>
         </Card>
 
+        {DEMO_MODE && (
         <Card title="Dados de demonstração">
           <p className="mb-3 text-[13px] text-muted">
             Apaga tudo o que foi alterado neste navegador (produtos, pedidos, cupons, dados da loja) e volta ao
@@ -319,13 +345,13 @@ export function StoreSettingsPage() {
             size="sm"
             onClick={() => {
               if (!window.confirm("Restaurar os dados de demonstração? Todas as alterações feitas aqui serão perdidas.")) return;
-              dbActions.resetDemo();
-              window.location.reload();
+              void dbActions.resetDemo().then(() => window.location.reload());
             }}
           >
             Restaurar dados de demonstração
           </Button>
         </Card>
+        )}
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-white/95 backdrop-blur lg:left-64">
@@ -344,8 +370,8 @@ export function StoreSettingsPage() {
               Descartar
             </Button>
           )}
-          <Button onClick={save} disabled={!dirty}>
-            Salvar alterações
+          <Button onClick={save} disabled={!dirty || saving}>
+            {saving ? "Salvando…" : "Salvar alterações"}
           </Button>
         </div>
       </div>

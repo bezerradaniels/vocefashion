@@ -23,7 +23,9 @@ function sanitize(raw: unknown): StoreState {
     ? r.bag.filter(
         (b): b is BagItem =>
           !!b &&
-          getProducts().some((p) => p.id === b.pid) &&
+          // Não confere se o produto existe: no Supabase o catálogo ainda está carregando aqui.
+          // Peças removidas somem da sacola em useBagLines.
+          Number.isInteger(b.pid) &&
           (SIZES as readonly string[]).includes(b.size) &&
           Number.isInteger(b.qty) &&
           b.qty > 0,
@@ -88,6 +90,11 @@ export function useStore() {
 }
 
 
+/** Peças disponíveis de um produto num tamanho (0 se o produto não existe). */
+function stockOf(pid: number, size: Size) {
+  return getProducts().find((p) => p.id === pid)?.stock[size] ?? 0;
+}
+
 export const actions = {
   toggleWish(id: number) {
     update((s) => {
@@ -97,7 +104,13 @@ export const actions = {
       return { ...s, wish };
     });
   },
-  addToBag(pid: number, size: Size) {
+  /**
+   * Soma 1 peça. Devolve false (e não muda nada) se a sacola já tem todo o estoque do tamanho.
+   */
+  addToBag(pid: number, size: Size): boolean {
+    ensureLoaded();
+    const inBag = state.bag.find((b) => b.pid === pid && b.size === size)?.qty ?? 0;
+    if (inBag + 1 > stockOf(pid, size)) return false;
     update((s) => {
       const bag = [...s.bag];
       const i = bag.findIndex((b) => b.pid === pid && b.size === size);
@@ -105,6 +118,7 @@ export const actions = {
       else bag.push({ pid, size, qty: 1 });
       return { ...s, bag };
     });
+    return true;
   },
   /** Quantidade 0 remove o item. */
   changeQty(index: number, delta: number) {
@@ -113,6 +127,8 @@ export const actions = {
       const item = bag[index];
       if (!item) return s;
       const qty = item.qty + delta;
+      // Aumentar não passa do estoque do tamanho (diminuir é sempre permitido).
+      if (delta > 0 && qty > stockOf(item.pid, item.size)) return s;
       if (qty <= 0) bag.splice(index, 1);
       else bag[index] = { ...item, qty };
       return { ...s, bag };
@@ -123,17 +139,22 @@ export const actions = {
   },
 };
 
-/** Itens da sacola já com o produto, mais quantidade total e subtotal. */
+/**
+ * Itens da sacola já com o produto, mais quantidade total e subtotal.
+ * `stock` é o disponível agora: se o admin baixar o estoque, `qty > stock` marca o item.
+ */
 export function useBagLines() {
   const { bag } = useStore();
   const products = useProducts();
   // Peças desativadas ou removidas no admin somem da sacola.
   const lines = bag.flatMap((b, index) => {
     const product = products.find((p) => p.id === b.pid && p.active);
-    return product ? [{ ...b, index, product }] : [];
+    return product ? [{ ...b, index, product, stock: product.stock[b.size] }] : [];
   });
   return {
     lines,
+    /** Algum item pede mais peças do que há em estoque (o pedido não pode ser fechado). */
+    overStock: lines.some((l) => l.qty > l.stock),
     count: lines.reduce((n, l) => n + l.qty, 0),
     subtotal: lines.reduce((n, l) => n + l.product.price * l.qty, 0),
   };
