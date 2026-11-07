@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
-import { useState, type ReactNode } from "react";
-import { applyCoupon, shippingOptions } from "@/data/catalog";
+import { useEffect, useState, type ReactNode } from "react";
+import { shippingOptions } from "@/data/catalog";
 import { FloatingField } from "@/components/field";
 import {
   BackIcon,
@@ -18,7 +18,7 @@ import {
   QtyStepper,
   SecondaryButton,
 } from "@/components/ui";
-import { dbActions, OutOfStockError, useCoupons, useSettings } from "@/lib/db";
+import { dbActions, DEMO_MODE, errorMessage, useSettings, type CouponCheck } from "@/lib/db";
 import { brl, digits, isValidCpf, MASKS, type MaskName } from "@/lib/format";
 import { useGoBack } from "@/lib/navigation";
 import { actions, useBagLines } from "@/lib/store";
@@ -55,7 +55,6 @@ export function Checkout() {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const settings = useSettings();
-  const coupons = useCoupons();
   const { lines, count: bagCount, subtotal, overStock } = useBagLines();
   const { pix, card } = settings.payments;
   const PIX_PCT = pix.discountPercent;
@@ -70,6 +69,10 @@ export function Checkout() {
   const [ship, setShip] = useState<string | null>(null);
   const [payChoice, setPay] = useState<Pay>(pix.enabled ? "pix" : "card");
   const [couponCode, setCouponCode] = useState<string | null>(null);
+  // Última conferência do cupom (no Supabase, feita pelo servidor) e para qual subtotal.
+  const [couponCheck, setCouponCheck] = useState<{ code: string; subtotal: number; result: CouponCheck } | null>(null);
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(true);
   const [success, setSuccess] = useState<{ pay: Pay; total: number; order: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -84,12 +87,25 @@ export function Checkout() {
   const opts = shippingOptions(settings, cepLocal, subtotal);
   const shipSel = opts.find((o) => o.id === ship);
   const frete = cepDone && shipSel ? shipSel.finalPrice : null;
-  const couponResult = couponCode ? applyCoupon(coupons, couponCode, subtotal) : null;
+  const couponResult = couponCode && couponCheck?.code === couponCode ? couponCheck.result : null;
   const couponDiscount = couponResult?.ok ? couponResult.discount : 0;
   const base = subtotal - couponDiscount;
   const pixDisc = pay === "pix" ? Math.round(base * PIX_PCT) / 100 : 0;
   const total = base + (frete ?? 0) - pixDisc;
   const installment = (base + (frete ?? 0)) / INSTALLMENTS;
+
+  // Sacola mudou com cupom aplicado: confere de novo (o mínimo e o desconto dependem do subtotal).
+  useEffect(() => {
+    if (!couponCode || !subtotal || (couponCheck?.code === couponCode && couponCheck.subtotal === subtotal)) return;
+    let alive = true;
+    dbActions.checkCoupon(couponCode, subtotal).then(
+      (result) => alive && setCouponCheck({ code: couponCode, subtotal, result }),
+      () => {},
+    );
+    return () => {
+      alive = false;
+    };
+  }, [couponCode, couponCheck, subtotal]);
 
   // ---- Campos ----
   const v = (k: FieldKey) => values[k] ?? "";
@@ -132,7 +148,8 @@ export function Checkout() {
         if (!v("bairro").trim()) e.bairro = "Informe o bairro";
       }
     }
-    if (n === 3 && pay === "card") {
+    // Sem gateway ainda: no Supabase, o cartão é cobrado por link enviado pela loja (não pedimos os dados aqui).
+    if (n === 3 && pay === "card" && DEMO_MODE) {
       if (digits(v("cartao")).length < 16) e.cartao = "Número incompleto";
       if (!v("titular").trim()) e.titular = "Como está no cartão";
       if (digits(v("validade")).length !== 4) e.validade = "MM/AA";
@@ -176,23 +193,32 @@ export function Checkout() {
     setShip((available.find((o) => !o.pickup) ?? available[0]).id);
   }
 
-  function applyCouponCode() {
+  async function applyCouponCode() {
     const code = v("cupom").trim();
     if (!code) {
       setErrors((e) => ({ ...e, cupom: "Digite o código do cupom" }));
       return;
     }
-    const r = applyCoupon(coupons, code, subtotal);
-    if (!r.ok) {
-      setErrors((e) => ({ ...e, cupom: r.error }));
-      return;
+    if (couponBusy) return;
+    setCouponBusy(true);
+    try {
+      const r = await dbActions.checkCoupon(code, subtotal);
+      if (!r.ok) {
+        setErrors((e) => ({ ...e, cupom: r.error }));
+        return;
+      }
+      setCouponCheck({ code: r.code, subtotal, result: r });
+      setCouponCode(r.code);
+      setValues((s) => ({ ...s, cupom: "" }));
+    } catch (err) {
+      setErrors((e) => ({ ...e, cupom: errorMessage(err, "Não foi possível conferir o cupom agora.") }));
+    } finally {
+      setCouponBusy(false);
     }
-    setCouponCode(r.coupon.code);
-    setValues((s) => ({ ...s, cupom: "" }));
   }
 
-  function finish() {
-    if (!lines.length || noPayment) return;
+  async function finish() {
+    if (!lines.length || noPayment || submitting) return;
     if (overStock) {
       setSummaryOpen(true);
       return;
@@ -208,9 +234,10 @@ export function Checkout() {
     }
     if (!shipSel) return;
     // TODO produção: criar o pedido no backend e gerar a cobrança (Pix/cartão) no gateway.
-    let order;
+    let receipt;
+    setSubmitting(true);
     try {
-      order = dbActions.createOrder({
+      receipt = await dbActions.createOrder({
         customer: { nome: v("nome").trim(), email: v("email").trim(), cel: v("cel"), cpf: v("cpf") },
         delivery: {
           methodId: shipSel.id,
@@ -233,21 +260,22 @@ export function Checkout() {
         })),
         subtotal,
         shippingCost: frete ?? 0,
-        couponCode: couponResult?.ok ? couponResult.coupon.code : null,
+        couponCode: couponResult?.ok ? couponResult.code : null,
         couponDiscount,
         pixDiscount: pixDisc,
         total: Math.round(total * 100) / 100,
       });
     } catch (err) {
       setSummaryOpen(true);
-      setOrderError(
-        err instanceof OutOfStockError ? err.message : "Não foi possível registrar o pedido. Tente de novo.",
-      );
+      setOrderError(errorMessage(err, "Não foi possível registrar o pedido. Tente de novo."));
       return;
+    } finally {
+      setSubmitting(false);
     }
     setDone({ 1: true, 2: true, 3: true });
     setOpen(0);
-    setSuccess({ pay, total, order: order.number });
+    // No Supabase, o total oficial é o calculado pelo servidor.
+    setSuccess({ pay, total: receipt.total, order: receipt.number });
     actions.clearBag();
   }
 
@@ -461,7 +489,13 @@ export function Checkout() {
                     </span>
                   </span>
                   <span className="text-[13px] leading-[18px] text-body-2">
-                    {PIX_PCT ? `${PIX_PCT}% de desconto · aprovação na hora` : "Aprovação na hora"}
+                    {DEMO_MODE
+                      ? PIX_PCT
+                        ? `${PIX_PCT}% de desconto · aprovação na hora`
+                        : "Aprovação na hora"
+                      : PIX_PCT
+                        ? `${PIX_PCT}% de desconto`
+                        : "Chave Pix enviada pelo WhatsApp"}
                   </span>
                 </span>
               </RadioCard>
@@ -485,7 +519,12 @@ export function Checkout() {
                 <p className="text-[14px] text-error">Pagamento online indisponível no momento. Fale com a loja.</p>
               )}
             </div>
-            {pay === "card" && (
+            {pay === "card" && !DEMO_MODE && (
+              <p className="mt-1 text-[13px] leading-[18px] text-body-2">
+                Você recebe o link de pagamento do cartão pelo WhatsApp, depois de finalizar o pedido.
+              </p>
+            )}
+            {pay === "card" && DEMO_MODE && (
               <div className="mt-1 grid grid-cols-2 gap-3">
                 <FloatingField
                   label="Número do cartão"
@@ -516,10 +555,12 @@ export function Checkout() {
                 />
               </div>
             )}
-            <div className="flex items-center gap-2 pt-1.5 text-[12px] leading-4 text-body-2">
-              <LockIcon size={16} className="flex-none" />
-              Pagamento criptografado. Não guardamos os dados do seu cartão.
-            </div>
+            {DEMO_MODE && (
+              <div className="flex items-center gap-2 pt-1.5 text-[12px] leading-4 text-body-2">
+                <LockIcon size={16} className="flex-none" />
+                Pagamento criptografado. Não guardamos os dados do seu cartão.
+              </div>
+            )}
           </div>
         </StepCard>
 
@@ -528,11 +569,14 @@ export function Checkout() {
           {couponResult?.ok ? (
             <div className="mb-1 flex items-center justify-between gap-3 rounded-field bg-copper-tint px-3 py-2.5">
               <span className="text-[13px]">
-                Cupom <strong className="font-semibold">{couponResult.coupon.code}</strong> aplicado
+                Cupom <strong className="font-semibold">{couponResult.code}</strong> aplicado
               </span>
               <button
                 type="button"
-                onClick={() => setCouponCode(null)}
+                onClick={() => {
+                  setCouponCode(null);
+                  setCouponCheck(null);
+                }}
                 className="text-[13px] font-medium underline underline-offset-[3px]"
               >
                 Remover
@@ -551,6 +595,7 @@ export function Checkout() {
               <button
                 type="button"
                 onClick={applyCouponCode}
+                disabled={couponBusy}
                 className="h-14 rounded-full bg-charcoal px-[18px] text-[15px] font-semibold text-white"
               >
                 Aplicar
@@ -567,7 +612,7 @@ export function Checkout() {
           </div>
           {couponDiscount > 0 && (
             <div className="flex justify-between font-medium text-copper-ink">
-              <span>Cupom {couponResult?.ok ? couponResult.coupon.code : ""}</span>
+              <span>Cupom {couponResult?.ok ? couponResult.code : ""}</span>
               <span>− {brl(couponDiscount)}</span>
             </div>
           )}
@@ -598,8 +643,8 @@ export function Checkout() {
                 : ""}
           </span>
         </div>
-        <PrimaryButton type="button" onClick={finish} disabled={!lines.length || noPayment || overStock}>
-          Finalizar Compra
+        <PrimaryButton type="button" onClick={finish} disabled={!lines.length || noPayment || overStock || submitting}>
+          {submitting ? "Enviando pedido…" : "Finalizar Compra"}
         </PrimaryButton>
       </div>
 
@@ -615,14 +660,17 @@ export function Checkout() {
             <CheckIcon size={28} />
           </span>
           <h2 id="success-title" className="font-display text-[30px] leading-9 font-bold tracking-[-.02em]">
-            {success.pay === "pix" ? "Quase lá!" : "Pedido confirmado!"}
+            {DEMO_MODE ? (success.pay === "pix" ? "Quase lá!" : "Pedido confirmado!") : "Pedido recebido!"}
           </h2>
           <p className="text-[15px] leading-[22px] text-pretty text-body-2">
-            {success.pay === "pix"
-              ? `Pague ${brl(success.total)} com o Pix para confirmar seu pedido #${success.order}. Enviamos os detalhes no seu WhatsApp.`
-              : `Pagamento aprovado. Pedido #${success.order} — acompanhe tudo pelo WhatsApp.`}
+            {DEMO_MODE
+              ? success.pay === "pix"
+                ? `Pague ${brl(success.total)} com o Pix para confirmar seu pedido #${success.order}. Enviamos os detalhes no seu WhatsApp.`
+                : `Pagamento aprovado. Pedido #${success.order} — acompanhe tudo pelo WhatsApp.`
+              : // TODO produção: com o gateway, mostrar o QR Code Pix / aprovação do cartão aqui.
+                `Seu pedido #${success.order} de ${brl(success.total)} foi registrado. A loja vai falar com você pelo WhatsApp para confirmar o pagamento${success.pay === "pix" ? " via Pix" : ""} e a entrega.`}
           </p>
-          {success.pay === "pix" && (
+          {DEMO_MODE && success.pay === "pix" && (
             <>
               {/* TODO produção: QR Code e código copia-e-cola vindos do gateway de pagamento. */}
               <div

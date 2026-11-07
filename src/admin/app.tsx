@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes, ScrollRestoration, useLocation } from "react-router";
 import { useAdminSession } from "@/admin/auth";
+import { LoadingScreen } from "@/components/loading-screen";
+import { useDbStatus } from "@/lib/db";
 import { AdminLayout } from "@/admin/layout";
 import { CategoriesPage } from "@/admin/pages/categories";
 import { CouponsPage } from "@/admin/pages/coupons";
@@ -45,6 +47,9 @@ export function AdminApp() {
 function RequireAuth({ children }: { children: ReactNode }) {
   const session = useAdminSession();
   const { pathname } = useLocation();
+  const status = useDbStatus();
+  if (status === "error") return <LoadingScreen error />;
+  if (session === undefined || status === "loading") return <LoadingScreen label="Abrindo o painel…" />;
   if (!session) return <Navigate to="/admin/login" replace state={{ from: pathname }} />;
   return children;
 }

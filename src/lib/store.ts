@@ -23,7 +23,9 @@ function sanitize(raw: unknown): StoreState {
     ? r.bag.filter(
         (b): b is BagItem =>
           !!b &&
-          getProducts().some((p) => p.id === b.pid) &&
+          // Não confere se o produto existe: no Supabase o catálogo ainda está carregando aqui.
+          // Peças removidas somem da sacola em useBagLines.
+          Number.isInteger(b.pid) &&
           (SIZES as readonly string[]).includes(b.size) &&
           Number.isInteger(b.qty) &&
           b.qty > 0,

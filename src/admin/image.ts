@@ -1,11 +1,7 @@
-/**
- * Lê uma imagem escolhida pelo usuário, reduz e devolve como data URL (JPEG).
- * Mantém o localStorage leve no modo demonstração; no Supabase, vira upload no Storage.
- */
-export async function fileToResizedDataUrl(
-  file: File,
-  { maxW = 1080, maxH = 1350, quality = 0.8, type = "image/jpeg" } = {},
-): Promise<string> {
+export type ResizeOptions = { maxW?: number; maxH?: number; quality?: number; type?: string };
+
+/** Lê a imagem escolhida e desenha reduzida num canvas (sem aumentar fotos pequenas). */
+async function drawResized(file: File, { maxW = 1080, maxH = 1350, type = "image/jpeg" }: ResizeOptions) {
   if (!file.type.startsWith("image/")) throw new Error("Escolha um arquivo de imagem (JPG, PNG ou WebP).");
   const url = URL.createObjectURL(file);
   try {
@@ -28,10 +24,26 @@ export async function fileToResizedDataUrl(
       ctx.fillRect(0, 0, w, h);
     }
     ctx.drawImage(img, 0, 0, w, h);
-    return canvas.toDataURL(type, quality);
+    return canvas;
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+/** Modo demonstração: foto reduzida como data URL (fica no localStorage). */
+export async function fileToResizedDataUrl(file: File, opts: ResizeOptions = {}): Promise<string> {
+  const canvas = await drawResized(file, opts);
+  return canvas.toDataURL(opts.type ?? "image/jpeg", opts.quality ?? 0.8);
+}
+
+/** Supabase: foto reduzida como arquivo para enviar ao Storage. */
+export async function fileToResizedBlob(file: File, opts: ResizeOptions = {}): Promise<Blob> {
+  const canvas = await drawResized(file, opts);
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, opts.type ?? "image/jpeg", opts.quality ?? 0.85),
+  );
+  if (!blob) throw new Error("Seu navegador não conseguiu processar a imagem.");
+  return blob;
 }
 
 /** "189,90" | "1.234,5" | "189.90" → número (NaN se inválido). */

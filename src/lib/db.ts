@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import {
+  applyCoupon,
   SEED_CATEGORIES,
   SEED_COUPONS,
   SEED_HERO,
@@ -14,12 +15,20 @@ import {
   type Settings,
 } from "@/data/catalog";
 import { seedOrders } from "@/data/seed-orders";
+import type { ResizeOptions } from "@/admin/image";
+import * as remote from "@/lib/db-supabase";
+import { supabase } from "@/lib/supabase";
 
 /**
- * "Banco de dados" da loja, salvo no localStorage deste navegador (modo demonstração).
- * Loja e admin leem daqui. Para ir para produção, troque a implementação deste arquivo
- * por chamadas ao Supabase mantendo os mesmos nomes de hooks e ações.
+ * "Banco de dados" da loja. Loja e painel leem daqui pelos hooks (useProducts…) e gravam
+ * pelas ações (dbActions, todas assíncronas).
+ *
+ * - Com o Supabase configurado (src/lib/supabase.ts): lê e grava no banco.
+ * - Sem ele: modo demonstração, salvo no localStorage deste navegador.
  */
+
+export { DbError } from "@/lib/db-supabase";
+export type { Receipt } from "@/lib/db-supabase";
 
 export type DB = {
   version: 1;
@@ -32,6 +41,8 @@ export type DB = {
   nextProductId: number;
   nextOrderNumber: number;
 };
+
+export const DEMO_MODE = !supabase;
 
 // v2: catálogo com as fotos reais da cliente (troque a versão quando o seed mudar).
 const KEY = "vf-db-v2";
@@ -50,11 +61,33 @@ function seed(): DB {
   };
 }
 
+/** Antes de o Supabase responder: nada de catálogo de exemplo na tela. */
+function empty(): DB {
+  return {
+    version: 1,
+    products: [],
+    categories: [],
+    coupons: [],
+    orders: [],
+    settings: SEED_SETTINGS,
+    hero: { ...SEED_HERO, enabled: false },
+    nextProductId: 1,
+    nextOrderNumber: 1,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Estado em memória + assinatura (useSyncExternalStore)
+// ---------------------------------------------------------------------------
+
+export type DbStatus = "loading" | "ready" | "error";
+
 let state: DB | null = null;
+let status: DbStatus = DEMO_MODE ? "ready" : "loading";
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
-function read(): DB {
+function readLocal(): DB {
   try {
     const raw = window.localStorage.getItem(KEY);
     if (raw) {
@@ -68,19 +101,23 @@ function read(): DB {
 }
 
 function get(): DB {
-  if (!state) {
+  if (state) return state;
+  if (DEMO_MODE) {
     // Versões antigas do seed não servem mais: libera o espaço.
     try {
       window.localStorage.removeItem("vf-db-v1");
     } catch {
       // sem acesso ao storage
     }
-    state = read();
+    state = readLocal();
     window.addEventListener("storage", (e) => {
       if (e.key !== KEY) return;
-      state = read();
+      state = readLocal();
       emit();
     });
+  } else {
+    state = empty();
+    void reloadDb();
   }
   return state;
 }
@@ -91,7 +128,8 @@ export class StorageFullError extends Error {
   }
 }
 
-function update(fn: (db: DB) => DB) {
+/** Modo demonstração: aplica a mudança e grava no localStorage. */
+function updateLocal(fn: (db: DB) => DB) {
   const next = fn(get());
   try {
     window.localStorage.setItem(KEY, JSON.stringify(next));
@@ -100,6 +138,27 @@ function update(fn: (db: DB) => DB) {
   }
   state = next;
   emit();
+}
+
+/**
+ * Supabase: lê tudo de novo (depois de gravar, ao entrar/sair do painel).
+ * Com sessão de administradora, traz também ocultos, cupons e pedidos.
+ */
+export function reloadDb(): Promise<void> {
+  if (!supabase) return Promise.resolve();
+  const sb = supabase;
+  return (async () => {
+    try {
+      const { data } = await sb.auth.getSession();
+      const loaded = await remote.loadAll(sb, !!data.session);
+      state = { ...(state ?? empty()), ...loaded };
+      status = "ready";
+    } catch {
+      // Já carregado antes: mantém o que há na tela. Primeira carga: mostra o erro.
+      if (status !== "ready") status = "error";
+    }
+    emit();
+  })();
 }
 
 function subscribe(l: () => void) {
@@ -121,12 +180,22 @@ export const useOrders = () => useDB((d) => d.orders);
 export const useSettings = () => useDB((d) => d.settings);
 export const useHero = () => useDB((d) => d.hero);
 
+/** "loading" até a primeira leitura do Supabase; no modo demonstração, sempre "ready". */
+export function useDbStatus(): DbStatus {
+  return useSyncExternalStore(subscribe, () => {
+    get();
+    return status;
+  });
+}
+
 export const getProducts = () => get().products;
 
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+export type NewOrder = Omit<Order, "id" | "number" | "createdAt" | "status">;
 
 export class OutOfStockError extends Error {
   items: string[];
@@ -136,68 +205,136 @@ export class OutOfStockError extends Error {
   }
 }
 
-export type NewOrder = Omit<Order, "id" | "number" | "createdAt" | "status">;
+/** Grava no Supabase e recarrega; sem Supabase, roda a versão local. */
+async function write<T>(online: (sb: NonNullable<typeof supabase>) => Promise<T>, local: () => T): Promise<T> {
+  if (!supabase) return local();
+  const result = await online(supabase);
+  await reloadDb();
+  return result;
+}
+
+export type CouponCheck = remote.CouponCheck;
 
 export const dbActions = {
   // Produtos
-  saveProduct(p: Omit<Product, "id" | "createdAt"> & { id?: number; createdAt?: string }): number {
-    let id = p.id ?? 0;
-    update((d) => {
-      if (p.id) {
-        return { ...d, products: d.products.map((x) => (x.id === p.id ? { ...x, ...p, id: x.id } : x)) };
-      }
-      id = d.nextProductId;
-      const created: Product = { ...p, id, createdAt: new Date().toISOString() } as Product;
-      return { ...d, products: [created, ...d.products], nextProductId: id + 1 };
-    });
-    return id;
+  saveProduct(p: remote.ProductInput): Promise<number> {
+    return write(
+      (sb) => remote.saveProduct(sb, p),
+      () => {
+        let id = p.id ?? 0;
+        updateLocal((d) => {
+          if (p.id) {
+            return { ...d, products: d.products.map((x) => (x.id === p.id ? { ...x, ...p, id: x.id } : x)) };
+          }
+          id = d.nextProductId;
+          const created: Product = { ...p, id, createdAt: new Date().toISOString() } as Product;
+          return { ...d, products: [created, ...d.products], nextProductId: id + 1 };
+        });
+        return id;
+      },
+    );
   },
   deleteProduct(id: number) {
-    update((d) => ({ ...d, products: d.products.filter((p) => p.id !== id) }));
+    return write(
+      (sb) => remote.deleteProduct(sb, id),
+      () => updateLocal((d) => ({ ...d, products: d.products.filter((p) => p.id !== id) })),
+    );
   },
 
   // Categorias
   saveCategory(c: Omit<Category, "id"> & { id?: string }) {
-    update((d) => {
-      if (c.id && d.categories.some((x) => x.id === c.id))
-        return { ...d, categories: d.categories.map((x) => (x.id === c.id ? { ...x, ...c } as Category : x)) };
-      return { ...d, categories: [...d.categories, { ...c, id: c.id ?? uid() } as Category] };
-    });
+    const isNew = !c.id || !get().categories.some((x) => x.id === c.id);
+    const full = { ...c, id: c.id ?? uid() } as Category;
+    return write(
+      (sb) => remote.saveCategory(sb, full, isNew),
+      () =>
+        updateLocal((d) =>
+          isNew
+            ? { ...d, categories: [...d.categories, full] }
+            : { ...d, categories: d.categories.map((x) => (x.id === c.id ? { ...x, ...c } as Category : x)) },
+        ),
+    );
   },
   moveCategory(id: string, dir: -1 | 1) {
-    update((d) => {
-      const list = [...d.categories];
-      const i = list.findIndex((c) => c.id === id);
-      const j = i + dir;
-      if (i < 0 || j < 0 || j >= list.length) return d;
-      [list[i], list[j]] = [list[j], list[i]];
-      return { ...d, categories: list };
-    });
+    const ids = get().categories.map((c) => c.id);
+    const i = ids.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= ids.length) return Promise.resolve();
+    return write(
+      (sb) => remote.swapCategories(sb, ids, i, j),
+      () =>
+        updateLocal((d) => {
+          const list = [...d.categories];
+          [list[i], list[j]] = [list[j], list[i]];
+          return { ...d, categories: list };
+        }),
+    );
   },
   deleteCategory(id: string) {
-    update((d) => ({ ...d, categories: d.categories.filter((c) => c.id !== id) }));
+    return write(
+      (sb) => remote.deleteCategory(sb, id),
+      () => updateLocal((d) => ({ ...d, categories: d.categories.filter((c) => c.id !== id) })),
+    );
   },
 
   // Cupons
-  saveCoupon(c: Omit<Coupon, "id" | "used"> & { id?: string; used?: number }) {
-    update((d) => {
-      if (c.id && d.coupons.some((x) => x.id === c.id))
-        return { ...d, coupons: d.coupons.map((x) => (x.id === c.id ? { ...x, ...c } as Coupon : x)) };
-      return { ...d, coupons: [...d.coupons, { ...c, id: uid(), used: 0 } as Coupon] };
-    });
+  saveCoupon(c: remote.CouponInput) {
+    return write(
+      (sb) => remote.saveCoupon(sb, c),
+      () =>
+        updateLocal((d) => {
+          if (c.id && d.coupons.some((x) => x.id === c.id))
+            return { ...d, coupons: d.coupons.map((x) => (x.id === c.id ? { ...x, ...c } as Coupon : x)) };
+          return { ...d, coupons: [...d.coupons, { ...c, id: uid(), used: 0 } as Coupon] };
+        }),
+    );
   },
   deleteCoupon(id: string) {
-    update((d) => ({ ...d, coupons: d.coupons.filter((c) => c.id !== id) }));
+    return write(
+      (sb) => remote.deleteCoupon(sb, id),
+      () => updateLocal((d) => ({ ...d, coupons: d.coupons.filter((c) => c.id !== id) })),
+    );
+  },
+
+  /** Confere um cupom para o subtotal da sacola (no Supabase, sem expor a lista de cupons). */
+  async checkCoupon(code: string, subtotal: number): Promise<CouponCheck> {
+    if (supabase) return remote.checkCoupon(supabase, code, subtotal);
+    const r = applyCoupon(get().coupons, code, subtotal);
+    return r.ok ? { ok: true, code: r.coupon.code, discount: r.discount } : r;
   },
 
   // Pedidos
   /**
-   * Cria o pedido, baixa o estoque e conta o uso do cupom.
-   * Confere o estoque na hora (outra aba ou o admin pode ter mudado): falta de peça = OutOfStockError.
+   * Cria o pedido. No Supabase, preços, frete, cupom e desconto são recalculados no servidor
+   * e o estoque é conferido e baixado na mesma transação; o recibo traz o total oficial.
+   * Falta de peça = OutOfStockError.
    */
-  createOrder(input: NewOrder): Order {
+  async createOrder(input: NewOrder): Promise<remote.Receipt> {
+    if (supabase) {
+      try {
+        const receipt = await remote.placeOrder(supabase, {
+          customer: input.customer,
+          delivery: {
+            method_id: input.delivery.methodId,
+            cep: input.delivery.cep,
+            rua: input.delivery.rua,
+            num: input.delivery.num,
+            bairro: input.delivery.bairro,
+            comp: input.delivery.comp,
+          },
+          payment: input.payment,
+          items: input.items.map((i) => ({ product_id: i.pid, size: i.size, qty: i.qty })),
+          coupon_code: input.couponCode,
+        });
+        return receipt;
+      } finally {
+        // Estoque mudou (ou o pedido falhou por estoque): atualiza a vitrine.
+        void reloadDb();
+      }
+    }
     let order!: Order;
-    update((d) => {
+    updateLocal((d) => {
+      // Confere o estoque na hora (outra aba ou o admin pode ter mudado).
       const missing = input.items.filter((i) => {
         const p = d.products.find((x) => x.id === i.pid);
         const wanted = input.items.filter((x) => x.pid === i.pid && x.size === i.size).reduce((n, x) => n + x.qty, 0);
@@ -223,37 +360,62 @@ export const dbActions = {
         : d.coupons;
       return { ...d, orders: [order, ...d.orders], products, coupons, nextOrderNumber: d.nextOrderNumber + 1 };
     });
-    return order;
+    return { id: order.id, number: order.number, total: order.total };
   },
   /** Cancelar devolve as peças ao estoque; sair de "cancelado" baixa de novo. */
   setOrderStatus(id: string, status: OrderStatus) {
-    update((d) => {
-      const order = d.orders.find((o) => o.id === id);
-      if (!order || order.status === status) return d;
-      const sign = status === "cancelado" ? 1 : order.status === "cancelado" ? -1 : 0;
-      const products = sign
-        ? d.products.map((p) => {
-            const items = order.items.filter((i) => i.pid === p.id);
-            if (!items.length) return p;
-            const stock = { ...p.stock };
-            for (const i of items) stock[i.size] = Math.max(0, stock[i.size] + sign * i.qty);
-            return { ...p, stock };
-          })
-        : d.products;
-      return { ...d, products, orders: d.orders.map((o) => (o.id === id ? { ...o, status } : o)) };
-    });
+    return write(
+      (sb) => remote.setOrderStatus(sb, id, status),
+      () =>
+        updateLocal((d) => {
+          const order = d.orders.find((o) => o.id === id);
+          if (!order || order.status === status) return d;
+          const sign = status === "cancelado" ? 1 : order.status === "cancelado" ? -1 : 0;
+          const products = sign
+            ? d.products.map((p) => {
+                const items = order.items.filter((i) => i.pid === p.id);
+                if (!items.length) return p;
+                const stock = { ...p.stock };
+                for (const i of items) stock[i.size] = Math.max(0, stock[i.size] + sign * i.qty);
+                return { ...p, stock };
+              })
+            : d.products;
+          return { ...d, products, orders: d.orders.map((o) => (o.id === id ? { ...o, status } : o)) };
+        }),
+    );
   },
 
   // Loja
   saveSettings(settings: Settings) {
-    update((d) => ({ ...d, settings }));
+    return write(
+      (sb) => remote.saveSettings(sb, settings),
+      () => updateLocal((d) => ({ ...d, settings })),
+    );
   },
   saveHero(hero: Hero) {
-    update((d) => ({ ...d, hero }));
+    return write(
+      (sb) => remote.saveHero(sb, hero),
+      () => updateLocal((d) => ({ ...d, hero })),
+    );
   },
 
-  /** Volta tudo aos dados de demonstração. */
-  resetDemo() {
-    update(() => seed());
+  /** Reduz a foto e devolve o endereço: Storage no Supabase, data URL no modo demonstração. */
+  async uploadImage(file: File, resize?: ResizeOptions): Promise<string> {
+    const image = await import("@/admin/image");
+    if (!supabase) return image.fileToResizedDataUrl(file, resize);
+    const blob = await image.fileToResizedBlob(file, resize);
+    return remote.uploadImage(supabase, blob);
+  },
+
+  /** Modo demonstração: volta tudo aos dados de exemplo. */
+  async resetDemo() {
+    if (supabase) return;
+    updateLocal(() => seed());
   },
 };
+
+/** Mensagem para a tela a partir de um erro de gravação. */
+export function errorMessage(err: unknown, fallback = "Não foi possível salvar. Tente de novo.") {
+  if (err instanceof Error && err.message) return err.message;
+  return fallback;
+}

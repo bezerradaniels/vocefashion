@@ -5,7 +5,7 @@ import { ImagePicker } from "@/admin/image-picker";
 import { Button, Card, PageHeader, Select, TextArea, TextField, Toggle } from "@/admin/ui";
 import { useFlash } from "@/admin/use-flash";
 import { PlusIcon, TrashIcon } from "@/components/icons";
-import { dbActions, StorageFullError, useSettings } from "@/lib/db";
+import { dbActions, DEMO_MODE, errorMessage, useSettings } from "@/lib/db";
 import { digits, formatPhone } from "@/lib/format";
 import { useTitle } from "@/lib/title";
 
@@ -34,6 +34,7 @@ export function StoreSettingsPage() {
   const [form, setForm] = useState<Form>(() => toForm(saved));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { flash, node } = useFlash();
+  const [saving, setSaving] = useState(false);
   const dirty = JSON.stringify(form) !== JSON.stringify(toForm(saved));
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => {
@@ -46,7 +47,8 @@ export function StoreSettingsPage() {
   const setMethod = (i: number, patch: Partial<MethodForm>) =>
     setShip({ methods: form.shipping.methods.map((m, k) => (k === i ? { ...m, ...patch } : m)) });
 
-  function save() {
+  async function save() {
+    if (saving) return;
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Informe o nome da loja.";
     const phone = digits(form.phone);
@@ -71,8 +73,9 @@ export function StoreSettingsPage() {
 
     setErrors(e);
     if (Object.keys(e).length) return;
+    setSaving(true);
     try {
-      dbActions.saveSettings({
+      await dbActions.saveSettings({
         ...form,
         name: form.name.trim(),
         phone,
@@ -81,7 +84,9 @@ export function StoreSettingsPage() {
       });
       flash("Dados da loja salvos");
     } catch (err) {
-      setErrors({ save: err instanceof StorageFullError ? err.message : "Não foi possível salvar." });
+      setErrors({ save: errorMessage(err) });
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -309,6 +314,7 @@ export function StoreSettingsPage() {
           </Button>
         </Card>
 
+        {DEMO_MODE && (
         <Card title="Dados de demonstração">
           <p className="mb-3 text-[13px] text-muted">
             Apaga tudo o que foi alterado neste navegador (produtos, pedidos, cupons, dados da loja) e volta ao
@@ -319,13 +325,13 @@ export function StoreSettingsPage() {
             size="sm"
             onClick={() => {
               if (!window.confirm("Restaurar os dados de demonstração? Todas as alterações feitas aqui serão perdidas.")) return;
-              dbActions.resetDemo();
-              window.location.reload();
+              void dbActions.resetDemo().then(() => window.location.reload());
             }}
           >
             Restaurar dados de demonstração
           </Button>
         </Card>
+        )}
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-white/95 backdrop-blur lg:left-64">
@@ -344,8 +350,8 @@ export function StoreSettingsPage() {
               Descartar
             </Button>
           )}
-          <Button onClick={save} disabled={!dirty}>
-            Salvar alterações
+          <Button onClick={save} disabled={!dirty || saving}>
+            {saving ? "Salvando…" : "Salvar alterações"}
           </Button>
         </div>
       </div>

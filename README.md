@@ -10,23 +10,23 @@ npm run build:mintcode   # dist/ para a subpasta mintcode.digital/voce-fashion/
 npm run preview   # serve o dist/ localmente
 ```
 
-## Modo demonstração (sem backend)
+## Dados: Supabase ou modo demonstração
 
-Ainda não há servidor. Produtos, categorias, cupons, pedidos e dados da loja ficam no **localStorage do navegador** (`src/lib/db.ts`), começando com os dados de exemplo de `src/data/catalog.ts` e `src/data/seed-orders.ts`.
+`src/lib/db.ts` tem duas implementações com os mesmos hooks (`useProducts`…) e ações (`dbActions`, assíncronas):
 
-- O que é alterado no painel aparece na loja **aberta no mesmo navegador**. Outras pessoas não veem.
-- O login do painel é de demonstração: o e-mail e a senha de teste estão em `src/admin/demo-credentials.ts` (e a tela de login tem o botão "Preencher acesso de demonstração"). A senha é conferida no navegador, então **não protege nada**.
-- "Dados da loja → Restaurar dados de demonstração" volta tudo ao exemplo inicial.
+- **Supabase (padrão):** com `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` (já em `.env`), a loja lê e grava no banco (`src/lib/db-supabase.ts`), o painel usa o login do Supabase Auth e as fotos vão para o Storage.
+- **Modo demonstração:** sem essas variáveis (ex.: `.env.local` com as duas linhas vazias), tudo fica no localStorage do navegador, a partir de `src/data/catalog.ts` e `src/data/seed-orders.ts`. O login é o de teste (`src/admin/demo-credentials.ts`, conferido no navegador: **não protege nada**).
 
-## Banco de dados (Supabase) — em andamento
+## Banco de dados (Supabase)
 
-Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmmeiqjhbcujvsjge). O banco já está desenhado e testado, mas **o site ainda usa o localStorage**: a troca de `src/lib/db.ts` é o próximo passo.
+Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmmeiqjhbcujvsjge). Migração e seed aplicados; o site já usa o banco.
 
 | Arquivo | O que é |
 |---|---|
 | `supabase/migrations/20261107120000_estrutura_inicial.sql` | Tabelas, regras de acesso (RLS), funções do checkout e bucket de fotos |
 | `supabase/seed.sql` | Catálogo inicial (gerado de `src/data/catalog.ts` com `npm run db:seed-sql`) |
-| `src/lib/supabase.ts` | Cliente do Supabase (só liga com as variáveis do `.env.example`) |
+| `src/lib/supabase.ts` | Cliente do Supabase (liga com as variáveis do `.env`) |
+| `src/lib/db-supabase.ts` | Leitura/gravação no banco e conversão para os tipos da loja |
 | `.mcp.json` | Servidor MCP do Supabase para o Claude Code deste projeto |
 
 **Regras principais**
@@ -40,8 +40,7 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 1. Supabase → SQL Editor: rodar a migração e depois o `seed.sql` (ou `npx supabase link --project-ref vigxmmeiqjhbcujvsjge && npx supabase db push`).
 2. Authentication → Users: criar a usuária da loja. No SQL Editor:
    `insert into public.admin_users (user_id) select id from auth.users where email = 'email-da-loja';`
-3. Copiar `.env.example` para `.env.local` e colar a chave publicável (Project Settings → API Keys).
-4. Gerar os tipos: `npm run db:types`.
+3. Gerar os tipos (opcional): `npm run db:types`.
 
 **MCP no Claude Code (máquina local):** o `.mcp.json` já aponta para o projeto. Rode `claude /mcp` num terminal, escolha `supabase` → Authenticate.
 
@@ -82,12 +81,12 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 
 ## Pendências para produção
 
-- **Backend (Supabase):** banco, RLS e funções prontos (ver "Banco de dados"). Falta: aplicar no projeto, trocar `src/lib/db.ts` por chamadas ao Supabase (mesmos hooks e ações), login com Supabase Auth (apagar `demo-credentials.ts`) e upload das fotos para o Storage.
+- **Fotos antigas no Storage:** remover uma foto no painel não apaga o arquivo do bucket (só deixa de ser usado).
 - **Pedidos Pix não pagos:** `place_order` já baixa o estoque; falta cancelar sozinho o pedido "Aguardando pagamento" depois de um prazo (ex.: `pg_cron` a cada 15 min), para a peça voltar à vitrine.
 - **Produtos de demonstração:** os 7 produtos usam as fotos reais da cliente, mas nomes, preços, estoque e descrições são ilustrativos. Conferir com a loja (inclusive se as blusas capa são vendidas em conjunto com o short).
 - **Logo:** pedir à cliente o logo em PNG/SVG com fundo transparente.
 - **Frete:** ViaCEP + API de frete (Melhor Envio/Correios). Hoje a regra é pelo início do CEP configurado no painel.
-- **Pagamento:** gateway (QR Code e copia-e-cola do Pix, cartão). Hoje o pedido é registrado, mas nada é cobrado.
+- **Pagamento:** gateway (QR Code e copia-e-cola do Pix, cartão). Hoje o pedido é registrado e a cliente é avisada de que a loja vai combinar o pagamento pelo WhatsApp; o checkout não pede dados de cartão.
 - **Estoque:** a sacola e o pedido já respeitam o estoque deste navegador; com o Supabase, a baixa precisa ser feita no servidor (transação), para duas clientes não comprarem a mesma última peça.
 - **Páginas de produto geradas no build:** usam o catálogo inicial. Peças criadas ou alteradas só no painel não ganham prévia própria até haver backend.
 - **Sem desenho ainda:** "Guia de medidas" (o link foi retirado da página de produto até existir a tabela).

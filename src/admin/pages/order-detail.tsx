@@ -11,7 +11,7 @@ export function OrderDetailPage() {
   const { id } = useParams();
   const order = useOrders().find((o) => o.id === id);
   useTitle(order ? `Pedido #${order.number}` : "Pedido não encontrado");
-  const { flash, node } = useFlash();
+  const { run, node } = useFlash();
 
   if (!order) {
     return (
@@ -27,8 +27,7 @@ export function OrderDetailPage() {
   function changeStatus(status: OrderStatus) {
     if (!order || status === order.status) return;
     if (status === "cancelado" && !window.confirm("Cancelar este pedido? As peças voltam para o estoque.")) return;
-    dbActions.setOrderStatus(order.id, status);
-    flash(`Situação alterada para "${ORDER_STATUS_LABEL[status]}"`);
+    void run(dbActions.setOrderStatus(order.id, status), `Situação alterada para "${ORDER_STATUS_LABEL[status]}"`);
   }
 
   const d = order.delivery;

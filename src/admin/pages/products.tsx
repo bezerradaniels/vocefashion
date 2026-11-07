@@ -8,6 +8,7 @@ import { cx } from "@/lib/cx";
 import { dbActions, useCategories, useProducts } from "@/lib/db";
 import { brl } from "@/lib/format";
 import { useTitle } from "@/lib/title";
+import { useFlash } from "@/admin/use-flash";
 
 type Filter = "todos" | "ativos" | "inativos" | "promocao" | "sem-estoque";
 
@@ -18,6 +19,7 @@ export function ProductsPage() {
   const [filter, setFilter] = useState<Filter>("todos");
   const [cat, setCat] = useState("todas");
   const [q, setQ] = useState("");
+  const { run, node } = useFlash();
 
   const total = (p: (typeof products)[number]) => SIZES.reduce((n, s) => n + p.stock[s], 0);
 
@@ -131,7 +133,7 @@ export function ProductsPage() {
                     role="switch"
                     aria-checked={p.active}
                     aria-label={p.active ? `Ocultar ${p.name} da loja` : `Mostrar ${p.name} na loja`}
-                    onClick={() => dbActions.saveProduct({ ...p, active: !p.active })}
+                    onClick={() => void run(dbActions.saveProduct({ ...p, active: !p.active }), p.active ? `${p.name} oculto da loja` : `${p.name} visível na loja`)}
                     className="flex flex-none items-center gap-2 text-[12px] font-medium text-body-2"
                     title={p.active ? "Visível na loja" : "Oculto da loja"}
                   >
@@ -150,6 +152,7 @@ export function ProductsPage() {
           </EmptyState>
         )}
       </Card>
+      {node}
     </>
   );
 }

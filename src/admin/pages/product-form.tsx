@@ -5,7 +5,7 @@ import { moneyInput, parseMoney } from "@/admin/image";
 import { ImagePicker } from "@/admin/image-picker";
 import { Badge, Button, Card, EmptyState, PageHeader, Select, TextArea, TextField, Toggle } from "@/admin/ui";
 import { useFlash } from "@/admin/use-flash";
-import { dbActions, StorageFullError, useCategories, useProducts } from "@/lib/db";
+import { dbActions, errorMessage, useCategories, useProducts } from "@/lib/db";
 import { useTitle } from "@/lib/title";
 import { pageUrl } from "@/lib/asset";
 
@@ -69,6 +69,7 @@ export function ProductFormPage() {
   const [form, setForm] = useState<Form>(() => toForm(editing, categories[0]?.id ?? ""));
   const [errors, setErrors] = useState<Errors>({});
   const { flash, node } = useFlash();
+  const [saving, setSaving] = useState(false);
 
   if (!isNew && !editing) {
     return (
@@ -105,8 +106,9 @@ export function ProductFormPage() {
     return e;
   }
 
-  function submit(ev: FormEvent) {
+  async function submit(ev: FormEvent) {
     ev.preventDefault();
+    if (saving) return;
     const e = validate();
     if (Object.keys(e).length) {
       setErrors(e);
@@ -116,8 +118,9 @@ export function ProductFormPage() {
     const stock = Object.fromEntries(
       SIZES.map((s) => [s, Math.max(0, Math.floor(Number(form.stock[s]) || 0))]),
     ) as Record<Size, number>;
+    setSaving(true);
     try {
-      const savedId = dbActions.saveProduct({
+      const savedId = await dbActions.saveProduct({
         id: editing?.id,
         slug,
         name: form.name.trim(),
@@ -134,15 +137,19 @@ export function ProductFormPage() {
       if (isNew) navigate(`/admin/produtos/${savedId}`, { replace: true });
       flash(isNew ? "Produto criado" : "Alterações salvas");
     } catch (err) {
-      setErrors({ save: err instanceof StorageFullError ? err.message : "Não foi possível salvar." });
+      setErrors({ save: errorMessage(err) });
+    } finally {
+      setSaving(false);
     }
   }
 
   function remove() {
     if (!editing) return;
     if (!window.confirm(`Excluir "${editing.name}"? Esta ação não pode ser desfeita.`)) return;
-    dbActions.deleteProduct(editing.id);
-    navigate("/admin/produtos", { replace: true });
+    dbActions.deleteProduct(editing.id).then(
+      () => navigate("/admin/produtos", { replace: true }),
+      (err) => setErrors({ save: errorMessage(err, "Não foi possível excluir.") }),
+    );
   }
 
   return (
@@ -305,7 +312,7 @@ export function ProductFormPage() {
           <Link to="/admin/produtos" className="h-11 px-4 text-[15px] leading-[44px] font-semibold">
             Cancelar
           </Link>
-          <Button type="submit">{isNew ? "Criar produto" : "Salvar"}</Button>
+          <Button type="submit" disabled={saving}>{saving ? "Salvando…" : isNew ? "Criar produto" : "Salvar"}</Button>
         </div>
       </div>
       {node}

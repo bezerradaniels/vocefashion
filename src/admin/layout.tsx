@@ -167,8 +167,7 @@ function LogoutButton() {
     <button
       type="button"
       onClick={() => {
-        logout();
-        navigate("/admin/login", { replace: true });
+        void logout().then(() => navigate("/admin/login", { replace: true }));
       }}
       className="flex h-11 items-center gap-3 rounded-full px-3 text-left text-[14px] font-medium text-body-2 hover:bg-icon-btn"
     >
