@@ -32,6 +32,8 @@ Ainda não há servidor. Produtos, categorias, cupons, pedidos e dados da loja f
 | `src/admin/` | Painel: login, layout, componentes e páginas em `pages/` |
 | `public/produtos/<slug>/` | Fotos dos produtos de demonstração em WebP (`01.webp` = capa), feitas a partir das fotos da cliente (3:4, 960×1280) |
 | `public/banner/campanha.webp` | Foto 4:5 do banner da home |
+| `public/produtos/<slug>/og.jpg`, `public/og-home.jpg` | Fotos JPG para a prévia de links compartilhados |
+| `vite/seo.ts` | Tags de compartilhamento e páginas de produto geradas no build |
 | `docs/design/` | Handoff original: README, briefing, protótipo HTML e logo |
 
 ## Painel (`/admin`)
@@ -49,6 +51,7 @@ Ainda não há servidor. Produtos, categorias, cupons, pedidos e dados da loja f
 
 - **Gere o build para a pasta certa.** O endereço da pasta entra no build (`base` do Vite): use `npm run build` para a raiz do domínio e `npm run build:mintcode` para `/voce-fashion/`. Para outra subpasta: `npx vite build --base=/nome-da-pasta/`. Build da raiz numa subpasta = página em branco (CSS e JS com erro 404).
 - O build gera um `.htaccess` (Apache/LiteSpeed, ex.: Hostinger) com a pasta certa, para que `/produto/...`, `/checkout` e `/admin` abram ao recarregar. Ele é um arquivo oculto: confira se foi enviado.
+- **Prévia de links (WhatsApp, Instagram) e Google:** `vite/seo.ts` coloca título, descrição e tags Open Graph no `index.html` e gera `produto/<slug>.html` para cada peça do catálogo inicial (foto, preço e dados estruturados de Product). O domínio vem de `VITE_SITE_URL` em `.env.production` (build da raiz) e `.env.mintcode` (build da subpasta): **confirme o domínio definitivo** antes de publicar. A foto de compartilhamento de cada peça é `public/produtos/<slug>/og.jpg` (JPG 600×800); a da home é `public/og-home.jpg`.
 
 ## Pendências para produção
 
@@ -57,5 +60,6 @@ Ainda não há servidor. Produtos, categorias, cupons, pedidos e dados da loja f
 - **Logo:** pedir à cliente o logo em PNG/SVG com fundo transparente.
 - **Frete:** ViaCEP + API de frete (Melhor Envio/Correios). Hoje a regra é pelo início do CEP configurado no painel.
 - **Pagamento:** gateway (QR Code e copia-e-cola do Pix, cartão). Hoje o pedido é registrado, mas nada é cobrado.
-- **Estoque:** a sacola ainda não limita a quantidade ao estoque do tamanho.
-- **Sem desenho ainda:** "Guia de medidas".
+- **Estoque:** a sacola e o pedido já respeitam o estoque deste navegador; com o Supabase, a baixa precisa ser feita no servidor (transação), para duas clientes não comprarem a mesma última peça.
+- **Páginas de produto geradas no build:** usam o catálogo inicial. Peças criadas ou alteradas só no painel não ganham prévia própria até haver backend.
+- **Sem desenho ainda:** "Guia de medidas" (o link foi retirado da página de produto até existir a tabela).

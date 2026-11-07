@@ -128,6 +128,14 @@ const uid = () =>
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
+export class OutOfStockError extends Error {
+  items: string[];
+  constructor(items: string[]) {
+    super(`Sem estoque suficiente: ${items.join(", ")}. Ajuste a sacola para continuar.`);
+    this.items = items;
+  }
+}
+
 export type NewOrder = Omit<Order, "id" | "number" | "createdAt" | "status">;
 
 export const dbActions = {
@@ -183,10 +191,19 @@ export const dbActions = {
   },
 
   // Pedidos
-  /** Cria o pedido, baixa o estoque e conta o uso do cupom. */
+  /**
+   * Cria o pedido, baixa o estoque e conta o uso do cupom.
+   * Confere o estoque na hora (outra aba ou o admin pode ter mudado): falta de peça = OutOfStockError.
+   */
   createOrder(input: NewOrder): Order {
     let order!: Order;
     update((d) => {
+      const missing = input.items.filter((i) => {
+        const p = d.products.find((x) => x.id === i.pid);
+        const wanted = input.items.filter((x) => x.pid === i.pid && x.size === i.size).reduce((n, x) => n + x.qty, 0);
+        return !p || p.stock[i.size] < wanted;
+      });
+      if (missing.length) throw new OutOfStockError(missing.map((i) => `${i.name} (${i.size})`));
       order = {
         ...input,
         id: uid(),

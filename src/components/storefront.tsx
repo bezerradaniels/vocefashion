@@ -83,7 +83,7 @@ export function Storefront() {
                 className={cx(
                   "h-9 flex-none rounded-full border px-4 text-[14px] font-medium whitespace-nowrap",
                   active
-                    ? "border-copper bg-copper text-white"
+                    ? "border-copper-ink bg-copper-ink text-white"
                     : "border-chip bg-chip text-charcoal hover:border-charcoal",
                 )}
               >
@@ -182,7 +182,7 @@ function ProductCard({
           className="aspect-[4/5] rounded-card"
         >
           {off > 0 && (
-            <span className="absolute top-2.5 left-2.5 rounded-full bg-copper px-1.5 py-[5px] text-[11px] leading-none font-semibold text-white">
+            <span className="absolute top-2.5 left-2.5 rounded-full bg-copper-ink px-1.5 py-[5px] text-[11px] leading-none font-semibold text-white">
               −{off}%
             </span>
           )}

@@ -35,7 +35,7 @@ export function ProductView({
   ctaLabel?: "Adicionar à Sacola" | "Comprar Agora";
 }) {
   const goBack = useGoBack();
-  const { wish } = useStore();
+  const { wish, bag } = useStore();
   const wished = !!wish[p.id];
   const settings = useSettings();
   const category = useCategories().find((c) => c.id === p.categoryId)?.name ?? "";
@@ -46,6 +46,7 @@ export function ProductView({
   const [slide, setSlide] = useState(0);
   const [size, setSize] = useState<Size | null>(null);
   const [sizeErr, setSizeErr] = useState(false);
+  const [stockErr, setStockErr] = useState(false);
   const [descOpen, setDescOpen] = useState(false);
   const [toast, setToast] = useState("");
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -61,12 +62,15 @@ export function ProductView({
         label: `${p.photoLabel} · ${name}`,
       }));
   const stock = size ? p.stock[size] : null;
+  const inBag = size ? (bag.find((b) => b.pid === p.id && b.size === size)?.qty ?? 0) : 0;
   const stockNote =
-    stock === 1
-      ? "Última peça neste tamanho."
-      : stock
-        ? `${stock} peças disponíveis.`
-        : "Tamanhos riscados estão esgotados.";
+    stock && inBag >= stock
+      ? `Todas as peças deste tamanho já estão na sua sacola.`
+      : stock === 1
+        ? "Última peça neste tamanho."
+        : stock
+          ? `${stock} peças disponíveis.`
+          : "Tamanhos riscados estão esgotados.";
   const pixPrice = p.price * (1 - pix.discountPercent / 100);
   const installments = Math.max(1, card.installments);
 
@@ -75,7 +79,11 @@ export function ProductView({
       setSizeErr(true);
       return;
     }
-    actions.addToBag(p.id, size);
+    if (!actions.addToBag(p.id, size)) {
+      setStockErr(true);
+      setToast("");
+      return;
+    }
     setToast(`Tamanho ${size} adicionado`);
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(""), TOAST_MS);
@@ -166,7 +174,7 @@ export function ProductView({
             )}
             {pix.enabled && pix.discountPercent > 0 && (
               <span>
-                <span className="font-semibold text-copper">{brl(pixPrice)}</span> no Pix
+                <span className="font-semibold text-copper-ink">{brl(pixPrice)}</span> no Pix
               </span>
             )}
           </div>
@@ -178,14 +186,7 @@ export function ProductView({
               Tamanho
               {size && <span className="font-normal text-muted"> · {size}</span>}
             </span>
-            {/* TODO: tabela de medidas ainda não fornecida. */}
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="text-[13px] text-charcoal underline underline-offset-[3px]"
-            >
-              Guia de medidas
-            </a>
+            {/* TODO: link "Guia de medidas" volta quando a loja enviar a tabela (link sem destino confunde). */}
           </div>
           <div className="flex gap-2" role="radiogroup" aria-label="Tamanho">
             {SIZES.map((z) => {
@@ -202,6 +203,7 @@ export function ProductView({
                   onClick={() => {
                     setSize(z);
                     setSizeErr(false);
+                    setStockErr(false);
                   }}
                   className={cx(
                     "relative h-12 w-14 overflow-hidden rounded-field border text-[15px] font-medium",
@@ -228,9 +230,16 @@ export function ProductView({
               Escolha um tamanho para continuar.
             </span>
           )}
-          <span className="text-[13px] text-muted" aria-live="polite">
-            {stockNote}
-          </span>
+          {stockErr && (
+            <span role="alert" className="text-[13px] font-medium text-error">
+              Todas as peças do tamanho {size} já estão na sua sacola.
+            </span>
+          )}
+          {!stockErr && (
+            <span className="text-[13px] text-muted" aria-live="polite">
+              {stockNote}
+            </span>
+          )}
         </div>
 
         <section className="flex flex-col gap-2 border-t border-line pt-[18px]">

@@ -2,6 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
+import { seo } from "./vite/seo.ts";
 
 /**
  * Gera o .htaccess (Apache/LiteSpeed, ex.: Hostinger) para a pasta do build:
@@ -25,6 +26,9 @@ function spaHtaccess(): Plugin {
           "  RewriteEngine On",
           `  RewriteBase ${base}`,
           "  RewriteRule ^index\\.html$ - [L]",
+          "  # Páginas de produto geradas no build (prévia no WhatsApp/Instagram): /produto/x → produto/x.html",
+          "  RewriteCond %{REQUEST_FILENAME}.html -f",
+          "  RewriteRule ^(.+)$ $1.html [L]",
           "  RewriteCond %{REQUEST_FILENAME} !-f",
           "  RewriteCond %{REQUEST_FILENAME} !-d",
           `  RewriteRule . ${base}index.html [L]`,
@@ -40,7 +44,7 @@ function spaHtaccess(): Plugin {
 // Pasta de publicação: "/" (raiz do domínio) por padrão.
 // Para uma subpasta: `vite build --base=/voce-fashion/` (ver script build:mintcode).
 export default defineConfig({
-  plugins: [react(), tailwindcss(), spaHtaccess()],
+  plugins: [react(), tailwindcss(), spaHtaccess(), seo()],
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },

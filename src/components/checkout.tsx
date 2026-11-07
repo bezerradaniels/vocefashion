@@ -18,7 +18,7 @@ import {
   QtyStepper,
   SecondaryButton,
 } from "@/components/ui";
-import { dbActions, useCoupons, useSettings } from "@/lib/db";
+import { dbActions, OutOfStockError, useCoupons, useSettings } from "@/lib/db";
 import { brl, digits, isValidCpf, MASKS, type MaskName } from "@/lib/format";
 import { useGoBack } from "@/lib/navigation";
 import { actions, useBagLines } from "@/lib/store";
@@ -56,7 +56,7 @@ export function Checkout() {
   const goBack = useGoBack();
   const settings = useSettings();
   const coupons = useCoupons();
-  const { lines, count: bagCount, subtotal } = useBagLines();
+  const { lines, count: bagCount, subtotal, overStock } = useBagLines();
   const { pix, card } = settings.payments;
   const PIX_PCT = pix.discountPercent;
   const INSTALLMENTS = Math.max(1, card.installments);
@@ -73,6 +73,7 @@ export function Checkout() {
   const [summaryOpen, setSummaryOpen] = useState(true);
   const [success, setSuccess] = useState<{ pay: Pay; total: number; order: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [orderError, setOrderError] = useState("");
 
   // Forma de pagamento desativada no admin não pode ficar selecionada.
   const pay: Pay =
@@ -192,6 +193,11 @@ export function Checkout() {
 
   function finish() {
     if (!lines.length || noPayment) return;
+    if (overStock) {
+      setSummaryOpen(true);
+      return;
+    }
+    setOrderError("");
     for (const n of [1, 2, 3] as const) {
       const e = validate(n);
       if (Object.keys(e).length) {
@@ -202,34 +208,43 @@ export function Checkout() {
     }
     if (!shipSel) return;
     // TODO produção: criar o pedido no backend e gerar a cobrança (Pix/cartão) no gateway.
-    const order = dbActions.createOrder({
-      customer: { nome: v("nome").trim(), email: v("email").trim(), cel: v("cel"), cpf: v("cpf") },
-      delivery: {
-        methodId: shipSel.id,
-        methodName: shipSel.name,
-        pickup: shipSel.pickup,
-        cep: v("cep"),
-        city: cepLocal ? settings.shipping.localCityLabel : "",
-        rua: shipSel.pickup ? "" : v("rua").trim(),
-        num: shipSel.pickup ? "" : v("num").trim(),
-        bairro: shipSel.pickup ? "" : v("bairro").trim(),
-        comp: shipSel.pickup ? "" : v("comp").trim(),
-      },
-      payment: pay,
-      items: lines.map((l) => ({
-        pid: l.pid,
-        name: l.product.name,
-        size: l.size,
-        qty: l.qty,
-        price: l.product.price,
-      })),
-      subtotal,
-      shippingCost: frete ?? 0,
-      couponCode: couponResult?.ok ? couponResult.coupon.code : null,
-      couponDiscount,
-      pixDiscount: pixDisc,
-      total: Math.round(total * 100) / 100,
-    });
+    let order;
+    try {
+      order = dbActions.createOrder({
+        customer: { nome: v("nome").trim(), email: v("email").trim(), cel: v("cel"), cpf: v("cpf") },
+        delivery: {
+          methodId: shipSel.id,
+          methodName: shipSel.name,
+          pickup: shipSel.pickup,
+          cep: v("cep"),
+          city: cepLocal ? settings.shipping.localCityLabel : "",
+          rua: shipSel.pickup ? "" : v("rua").trim(),
+          num: shipSel.pickup ? "" : v("num").trim(),
+          bairro: shipSel.pickup ? "" : v("bairro").trim(),
+          comp: shipSel.pickup ? "" : v("comp").trim(),
+        },
+        payment: pay,
+        items: lines.map((l) => ({
+          pid: l.pid,
+          name: l.product.name,
+          size: l.size,
+          qty: l.qty,
+          price: l.product.price,
+        })),
+        subtotal,
+        shippingCost: frete ?? 0,
+        couponCode: couponResult?.ok ? couponResult.coupon.code : null,
+        couponDiscount,
+        pixDiscount: pixDisc,
+        total: Math.round(total * 100) / 100,
+      });
+    } catch (err) {
+      setSummaryOpen(true);
+      setOrderError(
+        err instanceof OutOfStockError ? err.message : "Não foi possível registrar o pedido. Tente de novo.",
+      );
+      return;
+    }
     setDone({ 1: true, 2: true, 3: true });
     setOpen(0);
     setSuccess({ pay, total, order: order.number });
@@ -304,10 +319,16 @@ export function Checkout() {
                       {l.product.name}
                     </span>
                     <span className="text-[12px] text-muted">Tamanho {l.size}</span>
+                    {l.qty > l.stock && (
+                      <span className="text-[12px] font-medium text-error">
+                        {l.stock ? `Só ${l.stock} em estoque: diminua a quantidade` : "Esgotou: remova da sacola"}
+                      </span>
+                    )}
                     <span className="mt-0.5 text-[14px] font-bold">{brl(l.product.price * l.qty)}</span>
                   </div>
                   <QtyStepper
                     qty={l.qty}
+                    max={l.stock}
                     label={l.product.name}
                     onDec={() => actions.changeQty(l.index, -1)}
                     onInc={() => actions.changeQty(l.index, 1)}
@@ -396,7 +417,7 @@ export function Checkout() {
                         <span className="text-[14px] font-semibold">{o.name}</span>
                         <span className="text-[12px] leading-4 text-muted">{o.note}</span>
                       </span>
-                      <span className={cx("text-[14px] font-bold", o.finalPrice ? "text-charcoal" : "text-copper")}>
+                      <span className={cx("text-[14px] font-bold", o.finalPrice ? "text-charcoal" : "text-copper-ink")}>
                         {o.finalPrice ? brl(o.finalPrice) : "Grátis"}
                       </span>
                     </RadioCard>
@@ -435,7 +456,7 @@ export function Checkout() {
                 <span className="flex flex-col gap-[3px]">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-[15px] font-semibold">Pix</span>
-                    <span className="rounded-full bg-copper px-1.5 py-1 text-[10px] leading-none font-semibold tracking-[.06em] text-white uppercase">
+                    <span className="rounded-full bg-copper-ink px-1.5 py-1 text-[10px] leading-none font-semibold tracking-[.06em] text-white uppercase">
                       Recomendado
                     </span>
                   </span>
@@ -545,18 +566,23 @@ export function Checkout() {
             <span>{frete === null ? "Informe o CEP" : frete ? brl(frete) : "Grátis"}</span>
           </div>
           {couponDiscount > 0 && (
-            <div className="flex justify-between font-medium text-copper">
+            <div className="flex justify-between font-medium text-copper-ink">
               <span>Cupom {couponResult?.ok ? couponResult.coupon.code : ""}</span>
               <span>− {brl(couponDiscount)}</span>
             </div>
           )}
           {pixDisc > 0 && (
-            <div className="flex justify-between font-medium text-copper">
+            <div className="flex justify-between font-medium text-copper-ink">
               <span>Desconto Pix ({PIX_PCT}%)</span>
               <span>− {brl(pixDisc)}</span>
             </div>
           )}
         </section>
+        {(overStock || orderError) && (
+          <p role="alert" className="rounded-card border border-error bg-white px-4 py-3 text-[14px] font-medium text-error">
+            {orderError || "Algumas peças da sacola não têm estoque suficiente. Ajuste as quantidades para finalizar."}
+          </p>
+        )}
       </main>
 
       {/* Total fixo */}
@@ -564,7 +590,7 @@ export function Checkout() {
         <div className="flex flex-col gap-px">
           <span className="text-[12px] text-muted">Total</span>
           <span className="text-[21px] font-bold">{brl(total)}</span>
-          <span className="text-[11px] font-medium text-copper">
+          <span className="text-[11px] font-medium text-copper-ink">
             {pixDisc + couponDiscount > 0
               ? `Economia de ${brl(pixDisc + couponDiscount)}`
               : pay === "card" && INSTALLMENTS > 1
@@ -572,7 +598,7 @@ export function Checkout() {
                 : ""}
           </span>
         </div>
-        <PrimaryButton type="button" onClick={finish} disabled={!lines.length || noPayment}>
+        <PrimaryButton type="button" onClick={finish} disabled={!lines.length || noPayment || overStock}>
           Finalizar Compra
         </PrimaryButton>
       </div>

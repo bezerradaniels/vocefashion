@@ -152,7 +152,7 @@ function NavItem({
       {to === "/admin/pedidos" && waiting > 0 && (
         <span
           title={`${waiting} aguardando pagamento`}
-          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-copper px-1.5 text-[11px] font-semibold text-white"
+          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-copper-ink px-1.5 text-[11px] font-semibold text-white"
         >
           {waiting}
         </span>
