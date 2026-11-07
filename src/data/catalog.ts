@@ -57,7 +57,8 @@ export type Settings = {
   instagram: string;
   address: string;
   payments: {
-    pix: { enabled: boolean; discountPercent: number };
+    /** expiryMinutes: prazo para pagar antes do cancelamento automático (0 = desligado). */
+    pix: { enabled: boolean; discountPercent: number; expiryMinutes: number };
     card: { enabled: boolean; installments: number };
   };
   shipping: {
@@ -141,6 +142,8 @@ export type Order = {
   couponDiscount: number;
   pixDiscount: number;
   total: number;
+  /** Quando o sistema cancelou o pedido por falta de pagamento do Pix (null = não foi). */
+  autoCancelledAt?: string | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -289,7 +292,7 @@ export const SEED_SETTINGS: Settings = {
   instagram: "",
   address: "Centro · Bom Jesus da Lapa — BA",
   payments: {
-    pix: { enabled: true, discountPercent: 5 },
+    pix: { enabled: true, discountPercent: 5, expiryMinutes: 120 },
     card: { enabled: true, installments: 3 },
   },
   shipping: {
@@ -417,6 +420,20 @@ export function filterShelf(products: Product[], key: ShelfKey) {
     return [...visible].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   if (key === "promocao") return visible.filter(isOnSale);
   return visible.filter((p) => p.categoryId === key);
+}
+
+/** Até quando um pedido Pix aguardando pagamento fica reservado (null = sem prazo). */
+export function pixDeadline(order: Pick<Order, "payment" | "status" | "createdAt">, settings: Settings) {
+  const minutes = settings.payments.pix.expiryMinutes;
+  if (order.payment !== "pix" || order.status !== "aguardando_pagamento" || !(minutes > 0)) return null;
+  return new Date(new Date(order.createdAt).getTime() + minutes * 60_000);
+}
+
+/** "2 horas", "30 minutos", "1 dia". */
+export function formatMinutes(minutes: number) {
+  if (minutes % 1440 === 0) return minutes === 1440 ? "1 dia" : `${minutes / 1440} dias`;
+  if (minutes % 60 === 0) return minutes === 60 ? "1 hora" : `${minutes / 60} horas`;
+  return `${minutes} minutos`;
 }
 
 export type ShippingOption = ShippingMethod & { finalPrice: number; note: string };

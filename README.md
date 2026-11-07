@@ -24,6 +24,7 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 | Arquivo | O que é |
 |---|---|
 | `supabase/migrations/20261107120000_estrutura_inicial.sql` | Tabelas, regras de acesso (RLS), funções do checkout e bucket de fotos |
+| `supabase/migrations/20261108090000_cancelar_pix_nao_pago.sql` | Cancelamento automático de pedidos Pix não pagos (pg_cron a cada 5 min) |
 | `supabase/seed.sql` | Catálogo inicial (gerado de `src/data/catalog.ts` com `npm run db:seed-sql`) |
 | `src/lib/supabase.ts` | Cliente do Supabase (liga com as variáveis do `.env`) |
 | `src/lib/db-supabase.ts` | Leitura/gravação no banco e conversão para os tipos da loja |
@@ -34,10 +35,11 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 - O pedido é criado pela função `place_order`, que **recalcula tudo no servidor** (preço, frete, cupom, Pix) e trava o estoque na mesma transação: duas clientes não levam a mesma última peça.
 - `check_coupon` valida um cupom sem expor a lista de cupons.
 - Cancelar um pedido devolve as peças ao estoque; reativar baixa de novo (e é bloqueado se não houver peça).
+- Pedido Pix "Aguardando pagamento" há mais tempo que o prazo da loja (Dados da loja → Prazo para pagar o Pix; padrão 2 horas, "Não cancelar sozinho" desliga) é cancelado sozinho e as peças voltam. Roda a cada 5 minutos (`pg_cron`) e também antes de cada novo pedido. Ao receber o Pix, mude o pedido para "Pago".
 - Só administradoras (tabela `admin_users`) alteram catálogo, cupons, loja e situação dos pedidos, e enviam fotos ao bucket `produtos`.
 
 **Aplicar no projeto (uma vez)**
-1. Supabase → SQL Editor: rodar a migração e depois o `seed.sql` (ou `npx supabase link --project-ref vigxmmeiqjhbcujvsjge && npx supabase db push`).
+1. Supabase → SQL Editor: rodar as migrações (em ordem de data) e depois o `seed.sql` (ou `npx supabase link --project-ref vigxmmeiqjhbcujvsjge && npx supabase db push`).
 2. Authentication → Users: criar a usuária da loja. No SQL Editor:
    `insert into public.admin_users (user_id) select id from auth.users where email = 'email-da-loja';`
 3. Gerar os tipos (opcional): `npm run db:types`.
@@ -82,7 +84,6 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 ## Pendências para produção
 
 - **Fotos antigas no Storage:** remover uma foto no painel não apaga o arquivo do bucket (só deixa de ser usado).
-- **Pedidos Pix não pagos:** `place_order` já baixa o estoque; falta cancelar sozinho o pedido "Aguardando pagamento" depois de um prazo (ex.: `pg_cron` a cada 15 min), para a peça voltar à vitrine.
 - **Produtos de demonstração:** os 7 produtos usam as fotos reais da cliente, mas nomes, preços, estoque e descrições são ilustrativos. Conferir com a loja (inclusive se as blusas capa são vendidas em conjunto com o short).
 - **Logo:** pedir à cliente o logo em PNG/SVG com fundo transparente.
 - **Frete:** ViaCEP + API de frete (Melhor Envio/Correios). Hoje a regra é pelo início do CEP configurado no painel.

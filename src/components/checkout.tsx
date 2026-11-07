@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { shippingOptions } from "@/data/catalog";
+import { formatMinutes, shippingOptions } from "@/data/catalog";
 import { FloatingField } from "@/components/field";
 import {
   BackIcon,
@@ -668,7 +668,10 @@ export function Checkout() {
                 ? `Pague ${brl(success.total)} com o Pix para confirmar seu pedido #${success.order}. Enviamos os detalhes no seu WhatsApp.`
                 : `Pagamento aprovado. Pedido #${success.order} — acompanhe tudo pelo WhatsApp.`
               : // TODO produção: com o gateway, mostrar o QR Code Pix / aprovação do cartão aqui.
-                `Seu pedido #${success.order} de ${brl(success.total)} foi registrado. A loja vai falar com você pelo WhatsApp para confirmar o pagamento${success.pay === "pix" ? " via Pix" : ""} e a entrega.`}
+                `Seu pedido #${success.order} de ${brl(success.total)} foi registrado. A loja vai falar com você pelo WhatsApp para confirmar o pagamento${success.pay === "pix" ? " via Pix" : ""} e a entrega.` +
+                (success.pay === "pix" && pix.expiryMinutes > 0
+                  ? ` Pague em até ${formatMinutes(pix.expiryMinutes)}: depois disso o pedido é cancelado e as peças voltam para a loja.`
+                  : "")}
           </p>
           {DEMO_MODE && success.pay === "pix" && (
             <>

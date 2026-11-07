@@ -1,6 +1,6 @@
 -- Dados iniciais da loja (gerados a partir de src/data/catalog.ts).
 -- Nomes, preços, estoque e textos dos produtos são ilustrativos: conferir com a loja.
--- Rodar uma vez, depois da migração (SQL Editor ou `supabase db reset` no ambiente local).
+-- Rodar uma vez, depois de todas as migrações (SQL Editor ou `supabase db reset` no ambiente local).
 
 insert into public.categories (id, name, active, position) values
   ('vestidos', 'Vestidos', true, 0),
@@ -50,8 +50,8 @@ update public.product_stock s set qty = v.qty from (values
   (7, 'GG'::public.product_size, 1)
 ) as v (product_id, size, qty) where s.product_id = v.product_id and s.size = v.size;
 
-insert into public.store_settings (name, logo, description, phone, instagram, address, pix_enabled, pix_discount_percent, card_enabled, card_installments, local_cep_prefix, local_city_label) values
-  ('Você Fashion', '/logo-voce-fashion.jpg', 'Moda feminina em Bom Jesus da Lapa (BA). Loja física no Centro, com retirada em até 2h e entrega no mesmo dia na cidade.', '', '', 'Centro · Bom Jesus da Lapa — BA', true, 5, true, 3, '476', 'Bom Jesus da Lapa — BA');
+insert into public.store_settings (name, logo, description, phone, instagram, address, pix_enabled, pix_discount_percent, pix_expiry_minutes, card_enabled, card_installments, local_cep_prefix, local_city_label) values
+  ('Você Fashion', '/logo-voce-fashion.jpg', 'Moda feminina em Bom Jesus da Lapa (BA). Loja física no Centro, com retirada em até 2h e entrega no mesmo dia na cidade.', '', '', 'Centro · Bom Jesus da Lapa — BA', true, 5, 120, true, 3, '476', 'Bom Jesus da Lapa — BA');
 
 insert into public.shipping_methods (id, name, sub, price, enabled, scope, pickup, free_above, position) values
   ('retirada', 'Retirar na loja', 'Centro · Bom Jesus da Lapa · pronto em 2h', 0, true, 'local', true, null, 0),

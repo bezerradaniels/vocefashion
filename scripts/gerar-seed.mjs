@@ -11,7 +11,7 @@ const arr = (a) => `array[${a.map(q).join(", ")}]::text[]`;
 const out = [];
 out.push(`-- Dados iniciais da loja (gerados a partir de src/data/catalog.ts).
 -- Nomes, preços, estoque e textos dos produtos são ilustrativos: conferir com a loja.
--- Rodar uma vez, depois da migração (SQL Editor ou \`supabase db reset\` no ambiente local).
+-- Rodar uma vez, depois de todas as migrações (SQL Editor ou \`supabase db reset\` no ambiente local).
 `);
 out.push("insert into public.categories (id, name, active, position) values");
 out.push(c.SEED_CATEGORIES.map((x, i) => `  (${q(x.id)}, ${q(x.name)}, ${x.active}, ${i})`).join(",\n") + ";\n");
@@ -23,8 +23,8 @@ out.push("update public.product_stock s set qty = v.qty from (values");
 out.push(c.SEED_PRODUCTS.flatMap((p) => Object.entries(p.stock).map(([s, n]) => `  (${p.id}, '${s}'::public.product_size, ${n})`)).join(",\n"));
 out.push(") as v (product_id, size, qty) where s.product_id = v.product_id and s.size = v.size;\n");
 const st = c.SEED_SETTINGS;
-out.push(`insert into public.store_settings (name, logo, description, phone, instagram, address, pix_enabled, pix_discount_percent, card_enabled, card_installments, local_cep_prefix, local_city_label) values
-  (${[st.name, st.logo, st.description, st.phone, st.instagram, st.address].map(q).join(", ")}, ${st.payments.pix.enabled}, ${st.payments.pix.discountPercent}, ${st.payments.card.enabled}, ${st.payments.card.installments}, ${q(st.shipping.localCepPrefix)}, ${q(st.shipping.localCityLabel)});\n`);
+out.push(`insert into public.store_settings (name, logo, description, phone, instagram, address, pix_enabled, pix_discount_percent, pix_expiry_minutes, card_enabled, card_installments, local_cep_prefix, local_city_label) values
+  (${[st.name, st.logo, st.description, st.phone, st.instagram, st.address].map(q).join(", ")}, ${st.payments.pix.enabled}, ${st.payments.pix.discountPercent}, ${st.payments.pix.expiryMinutes}, ${st.payments.card.enabled}, ${st.payments.card.installments}, ${q(st.shipping.localCepPrefix)}, ${q(st.shipping.localCityLabel)});\n`);
 out.push("insert into public.shipping_methods (id, name, sub, price, enabled, scope, pickup, free_above, position) values");
 out.push(st.shipping.methods.map((m, i) => `  (${[m.id, m.name, m.sub].map(q).join(", ")}, ${m.price}, ${m.enabled}, ${q(m.scope)}, ${m.pickup}, ${q(m.freeAbove)}, ${i})`).join(",\n") + ";\n");
 const h = c.SEED_HERO;

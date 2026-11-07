@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import {
   applyCoupon,
+  pixDeadline,
   SEED_CATEGORIES,
   SEED_COUPONS,
   SEED_HERO,
@@ -92,12 +93,37 @@ function readLocal(): DB {
     const raw = window.localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DB;
-      if (parsed?.version === 1) return { ...seed(), ...parsed };
+      if (parsed?.version === 1) {
+        const db = { ...seed(), ...parsed };
+        const fixed = expireLocal(db);
+        if (fixed !== db) window.localStorage.setItem(KEY, JSON.stringify(fixed));
+        return fixed;
+      }
     }
   } catch {
     // dado corrompido: volta ao seed
   }
   return seed();
+}
+
+/** Modo demonstração: mesma regra do banco (cancel_expired_pix_orders), aplicada ao abrir. */
+function expireLocal(d: DB): DB {
+  const now = Date.now();
+  const expired = new Set(
+    d.orders.filter((o) => (pixDeadline(o, d.settings)?.getTime() ?? Infinity) < now).map((o) => o.id),
+  );
+  if (!expired.size) return d;
+  const products = d.products.map((p) => {
+    const stock = { ...p.stock };
+    for (const o of d.orders)
+      if (expired.has(o.id)) for (const i of o.items) if (i.pid === p.id) stock[i.size] += i.qty;
+    return { ...p, stock };
+  });
+  const at = new Date().toISOString();
+  const orders = d.orders.map((o) =>
+    expired.has(o.id) ? { ...o, status: "cancelado" as const, autoCancelledAt: at } : o,
+  );
+  return { ...d, products, orders };
 }
 
 function get(): DB {

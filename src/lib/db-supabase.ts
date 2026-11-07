@@ -47,6 +47,7 @@ type SettingsRow = {
   address: string;
   pix_enabled: boolean;
   pix_discount_percent: number;
+  pix_expiry_minutes: number;
   card_enabled: boolean;
   card_installments: number;
   local_cep_prefix: string;
@@ -109,6 +110,7 @@ type OrderRow = {
   coupon_discount: number;
   pix_discount: number;
   total: number;
+  auto_cancelled_at?: string | null;
   order_items: OrderItemRow[];
 };
 
@@ -155,7 +157,12 @@ const toSettings = (r: SettingsRow, methods: ShippingRow[]): Settings => ({
   instagram: r.instagram,
   address: r.address,
   payments: {
-    pix: { enabled: r.pix_enabled, discountPercent: num(r.pix_discount_percent) },
+    pix: {
+      enabled: r.pix_enabled,
+      discountPercent: num(r.pix_discount_percent),
+      // Banco sem a migração do cancelamento automático: trata como desligado.
+      expiryMinutes: r.pix_expiry_minutes ?? 0,
+    },
     card: { enabled: r.card_enabled, installments: r.card_installments },
   },
   shipping: {
@@ -218,6 +225,7 @@ const toOrder = (r: OrderRow): Order => ({
   couponDiscount: num(r.coupon_discount),
   pixDiscount: num(r.pix_discount),
   total: num(r.total),
+  autoCancelledAt: r.auto_cancelled_at ?? null,
 });
 
 // ---------------------------------------------------------------------------
@@ -387,6 +395,7 @@ export async function saveSettings(sb: SupabaseClient, s: Settings) {
         address: s.address,
         pix_enabled: s.payments.pix.enabled,
         pix_discount_percent: s.payments.pix.discountPercent,
+        pix_expiry_minutes: s.payments.pix.expiryMinutes,
         card_enabled: s.payments.card.enabled,
         card_installments: s.payments.card.installments,
         local_cep_prefix: s.shipping.localCepPrefix,

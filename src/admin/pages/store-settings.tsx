@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SEED_SETTINGS, type Settings, type ShippingMethod } from "@/data/catalog";
+import { formatMinutes, SEED_SETTINGS, type Settings, type ShippingMethod } from "@/data/catalog";
 import { moneyInput, parseMoney } from "@/admin/image";
 import { ImagePicker } from "@/admin/image-picker";
 import { Button, Card, PageHeader, Select, TextArea, TextField, Toggle } from "@/admin/ui";
@@ -57,6 +57,8 @@ export function StoreSettingsPage() {
     if (ig && !/^[A-Za-z0-9._]{1,30}$/.test(ig)) e.instagram = "Só letras, números, ponto e _.";
     if (!form.payments.pix.enabled && !form.payments.card.enabled) e.payments = "Deixe pelo menos uma forma de pagamento ativa.";
     if (form.payments.pix.discountPercent < 0 || form.payments.pix.discountPercent > 30) e.pix = "Entre 0% e 30%.";
+    const expiry = form.payments.pix.expiryMinutes;
+    if (!Number.isInteger(expiry) || expiry < 0 || expiry > 10080) e.pixExpiry = "Entre 0 e 10080 minutos (7 dias).";
     if (form.payments.card.installments < 1 || form.payments.card.installments > 12) e.card = "Entre 1 e 12 parcelas.";
     if (!/^\d{1,8}$/.test(form.shipping.localCepPrefix)) e.cep = "Use só números (ex.: 476).";
 
@@ -185,6 +187,24 @@ export function StoreSettingsPage() {
                 error={errors.pix}
                 onChange={(e) => setPay({ discountPercent: Number(e.target.value) }, "pix")}
               />
+              <Select
+                label="Prazo para pagar o Pix"
+                disabled={!form.payments.pix.enabled}
+                value={String(form.payments.pix.expiryMinutes ?? 0)}
+                error={errors.pixExpiry}
+                hint="Depois do prazo, o pedido é cancelado sozinho e as peças voltam para a loja."
+                onChange={(e) => setPay({ expiryMinutes: Number(e.target.value) }, "pix")}
+              >
+                {[...new Set([30, 60, 120, 240, 720, 1440, 2880, form.payments.pix.expiryMinutes ?? 0])]
+                  .filter((m) => m > 0)
+                  .sort((a, b) => a - b)
+                  .map((m) => (
+                    <option key={m} value={m}>
+                      {formatMinutes(m)}
+                    </option>
+                  ))}
+                <option value={0}>Não cancelar sozinho</option>
+              </Select>
             </div>
             <div className="flex flex-col gap-3 rounded-card border border-line p-4">
               <Toggle

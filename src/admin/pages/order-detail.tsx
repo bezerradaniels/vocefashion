@@ -1,15 +1,16 @@
 import { Link, useParams } from "react-router";
-import { ORDER_STATUSES, ORDER_STATUS_LABEL, type OrderStatus } from "@/data/catalog";
+import { ORDER_STATUSES, ORDER_STATUS_LABEL, pixDeadline, type OrderStatus } from "@/data/catalog";
 import { Card, EmptyState, PageHeader, Select, StatusBadge } from "@/admin/ui";
 import { useFlash } from "@/admin/use-flash";
 import { WhatsAppIcon } from "@/components/icons";
-import { dbActions, useOrders } from "@/lib/db";
+import { dbActions, useOrders, useSettings } from "@/lib/db";
 import { brl, whatsappUrl } from "@/lib/format";
 import { useTitle } from "@/lib/title";
 
 export function OrderDetailPage() {
   const { id } = useParams();
   const order = useOrders().find((o) => o.id === id);
+  const settings = useSettings();
   useTitle(order ? `Pedido #${order.number}` : "Pedido não encontrado");
   const { run, node } = useFlash();
 
@@ -102,7 +103,7 @@ export function OrderDetailPage() {
                 label="Alterar situação"
                 value={order.status}
                 onChange={(e) => changeStatus(e.target.value as OrderStatus)}
-                hint="Cancelar devolve as peças ao estoque."
+                hint={'Cancelar devolve as peças ao estoque. Ao receber o Pix, mude para "Pago".'}
               >
                 {ORDER_STATUSES.map((s) => (
                   <option key={s} value={s}>
@@ -110,6 +111,7 @@ export function OrderDetailPage() {
                   </option>
                 ))}
               </Select>
+              <PixNote order={order} deadline={pixDeadline(order, settings)} />
             </div>
           </Card>
 
@@ -151,4 +153,30 @@ function Row({ label, value }: { label: string; value: string }) {
       <dd className="text-right break-all">{value}</dd>
     </div>
   );
+}
+
+/** Prazo do Pix (aguardando) ou aviso de cancelamento automático. */
+function PixNote({
+  order,
+  deadline,
+}: {
+  order: { autoCancelledAt?: string | null; status: string };
+  deadline: Date | null;
+}) {
+  const time = (d: Date) => d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+  if (order.status === "cancelado" && order.autoCancelledAt)
+    return (
+      <p className="rounded-field bg-error-tint px-3 py-2.5 text-[13px] text-error">
+        Cancelado automaticamente em {time(new Date(order.autoCancelledAt))}: o Pix não foi pago no prazo. As peças
+        voltaram para o estoque.
+      </p>
+    );
+  if (deadline)
+    return (
+      <p className="rounded-field bg-copper-tint px-3 py-2.5 text-[13px] text-body-2">
+        Se o Pix não for confirmado até <strong className="font-semibold">{time(deadline)}</strong>, o pedido é
+        cancelado sozinho e as peças voltam para a loja.
+      </p>
+    );
+  return null;
 }
