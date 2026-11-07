@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFEEEC;color:#2C2C2C;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#B87353;text-decoration:none}a:hover{color:#2C2C2C;text-decoration:underline}
+*{scrollbar-width:none}*::-webkit-scrollbar{display:none}
+button{font-family:inherit}
+input::placeholder{color:#A8A8A8}
+</style>
+</helmet>
+<div style="max-width:1320px;margin:0 auto;padding:56px 40px 96px;display:flex;flex-direction:column;gap:72px">
+
+  <header style="display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:48px;align-items:end;border-bottom:1px solid #DAD8D5;padding-bottom:48px">
+    <div style="aspect-ratio:1/1;background:#F4F4F4;border-radius:18px;overflow:hidden">
+      <img src="assets/logo-voce-fashion.jpg" alt="Você Fashion — logotipo" style="width:100%;height:100%;object-fit:cover;display:block">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="font:500 12px/1 'Geist';letter-spacing:.12em;text-transform:uppercase;color:#B87353">Manual de Identidade Visual · v1.0 · Nov 2026</div>
+      <h1 style="margin:0;font:700 64px/1.02 'Plus Jakarta Sans';letter-spacing:-.02em;letter-spacing:-.01em;text-wrap:pretty">Você Fashion</h1>
+      <p style="margin:0;max-width:620px;font:400 17px/1.55 'Geist';color:#4A4A4A;text-wrap:pretty">Diretrizes de marca e interface para a loja virtual de moda feminina de Bom Jesus da Lapa, BA. Pensado para quem chega pelo Instagram: mobile-first, plano e com a fotografia em primeiro lugar.</p>
+    </div>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;background:#DAD8D5;border:1px solid #DAD8D5">
+    <div style="background:#F8F8F8;padding:28px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px 'Geist Mono';color:#B87353">01</div>
+      <div style="font:600 22px/1.2 'Plus Jakarta Sans'">Mobile-first</div>
+      <div style="font:400 15px/1.5 'Geist';color:#4A4A4A">Mais de 90% do tráfego vem do navegador do Instagram. Ações principais ficam ao alcance do polegar, na base da tela.</div>
+    </div>
+    <div style="background:#F8F8F8;padding:28px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px 'Geist Mono';color:#B87353">02</div>
+      <div style="font:600 22px/1.2 'Plus Jakarta Sans'">Flat e arredondado</div>
+      <div style="font:400 15px/1.5 'Geist';color:#4A4A4A">Cantos generosos — 18px nos cards, pílula nos botões e categorias. Superfícies brancas sobre alabastro, nenhuma sombra.</div>
+    </div>
+    <div style="background:#F8F8F8;padding:28px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px 'Geist Mono';color:#B87353">03</div>
+      <div style="font:600 22px/1.2 'Plus Jakarta Sans'">A foto é a vitrine</div>
+      <div style="font:400 15px/1.5 'Geist';color:#4A4A4A">Imagens em 4:5, de ponta a ponta. A interface recua para a roupa aparecer.</div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:16px;border-bottom:1px solid #DAD8D5;padding-bottom:14px">
+      <span style="font:500 13px 'Geist Mono';color:#B87353">A</span>
+      <h2 style="margin:0;font:700 34px/1.1 'Plus Jakarta Sans';letter-spacing:-.02em">Cores</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;overflow:hidden">
+        <div style="height:132px;background:#2C2C2C"></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:4px">
+          <div style="font:600 15px 'Geist'">Carvão</div>
+          <div style="font:400 13px 'Geist Mono';color:#707070">#2C2C2C · text-charcoal</div>
+          <div style="font:400 14px/1.45 'Geist';color:#4A4A4A;margin-top:6px">Textos, ícones, monograma VC e botões secundários.</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;overflow:hidden">
+        <div style="height:132px;background:#B87353"></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:4px">
+          <div style="font:600 15px 'Geist'">Cobre</div>
+          <div style="font:400 13px 'Geist Mono';color:#707070">#B87353 · bg/text-copper</div>
+          <div style="font:400 14px/1.45 'Geist';color:#4A4A4A;margin-top:6px">CTAs primários, etiquetas de promoção e estados ativos.</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;overflow:hidden">
+        <div style="height:132px;background:#F8F8F8;border-bottom:1px solid #E5E5E5"></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:4px">
+          <div style="font:600 15px 'Geist'">Alabastro</div>
+          <div style="font:400 13px 'Geist Mono';color:#707070">#F8F8F8 · bg-alabaster</div>
+          <div style="font:400 14px/1.45 'Geist';color:#4A4A4A;margin-top:6px">Fundo do app. Reduz o cansaço visual.</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;overflow:hidden">
+        <div style="height:132px;background:#FFFFFF;border-bottom:1px solid #E5E5E5"></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:4px">
+          <div style="font:600 15px 'Geist'">Branco</div>
+          <div style="font:400 13px 'Geist Mono';color:#707070">#FFFFFF · bg-white</div>
+          <div style="font:400 14px/1.45 'Geist';color:#4A4A4A;margin-top:6px">Cards de produto, painéis e contêineres.</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;overflow:hidden">
+        <div style="height:132px;background:#E5E5E5"></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:4px">
+          <div style="font:600 15px 'Geist'">Borda</div>
+          <div style="font:400 13px 'Geist Mono';color:#707070">#E5E5E5 · border-light</div>
+          <div style="font:400 14px/1.45 'Geist';color:#4A4A4A;margin-top:6px">Divisores e contornos de 1px.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:16px;border-bottom:1px solid #DAD8D5;padding-bottom:14px">
+      <span style="font:500 13px 'Geist Mono';color:#B87353">B</span>
+      <h2 style="margin:0;font:700 34px/1.1 'Plus Jakarta Sans';letter-spacing:-.02em">Tipografia</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px">
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:24px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px">
+          <div style="font:700 96px/0.9 'Plus Jakarta Sans';letter-spacing:-.02em">Aa</div>
+          <div style="text-align:right;display:flex;flex-direction:column;gap:4px">
+            <div style="font:600 15px 'Geist'">Plus Jakarta Sans</div>
+            <div style="font:400 13px 'Geist';color:#707070">Títulos · nomes de produto · peso 600–700</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;border-top:1px solid #E5E5E5">
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid #E5E5E5">
+            <span style="font:400 12px 'Geist Mono';color:#707070">H1 32/38</span><span style="font:700 32px/38px 'Plus Jakarta Sans';letter-spacing:-.02em">Vestido Midi Linho</span>
+          </div>
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid #E5E5E5">
+            <span style="font:400 12px 'Geist Mono';color:#707070">H2 24/30</span><span style="font:700 24px/30px 'Plus Jakarta Sans';letter-spacing:-.02em">Novidades da semana</span>
+          </div>
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid #E5E5E5">
+            <span style="font:400 12px 'Geist Mono';color:#707070">H3 20/26</span><span style="font:600 20px/26px 'Plus Jakarta Sans'">Identificação</span>
+          </div>
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0">
+            <span style="font:400 12px 'Geist Mono';color:#707070">Card 16/21</span><span style="font:600 16px/21px 'Plus Jakarta Sans'">Blusa Ombro a Ombro</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:24px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px">
+          <div style="font:500 96px/0.9 'Geist';letter-spacing:-.03em">Aa</div>
+          <div style="text-align:right;display:flex;flex-direction:column;gap:4px">
+            <div style="font:600 15px 'Geist'">Geist Sans</div>
+            <div style="font:400 13px 'Geist';color:#707070">Corpo · preços · interface</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;border-top:1px solid #E5E5E5">
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid #E5E5E5">
+            <span style="font:400 12px 'Geist Mono';color:#707070">Preço 22/28</span><span style="font:700 22px/28px 'Geist'">R$ 189,90</span>
+          </div>
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid #E5E5E5">
+            <span style="font:400 12px 'Geist Mono';color:#707070">Base 16/24</span><span style="font:400 16px/24px 'Geist'">Linho leve, fresco para o calor da Lapa.</span>
+          </div>
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid #E5E5E5">
+            <span style="font:400 12px 'Geist Mono';color:#707070">Apoio 14/20</span><span style="font:400 14px/20px 'Geist';color:#4A4A4A">ou 3x de R$ 63,30 sem juros</span>
+          </div>
+          <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:baseline;padding:14px 0">
+            <span style="font:400 12px 'Geist Mono';color:#707070">Legenda 11</span><span style="font:500 11px/16px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">Vestidos · Nova coleção</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:16px;border-bottom:1px solid #DAD8D5;padding-bottom:14px">
+      <span style="font:500 13px 'Geist Mono';color:#B87353">C</span>
+      <h2 style="margin:0;font:700 34px/1.1 'Plus Jakarta Sans';letter-spacing:-.02em">Componentes e ícones</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 11px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">Botões</div>
+        <button style="height:52px;width:100%;background:#B87353;color:#fff;border:0;border-radius:999px;font:600 16px 'Geist';cursor:pointer" style-hover="background:#A6654A" style-active="background:#94583F">Adicionar à Sacola</button>
+        <button style="height:52px;width:100%;background:transparent;color:#2C2C2C;border:1px solid #2C2C2C;border-radius:999px;font:500 16px 'Geist';cursor:pointer" style-hover="background:#2C2C2C;color:#fff">Continuar para entrega</button>
+        <button disabled="" style="height:52px;width:100%;background:#EDEDED;color:#8A8A8A;border:0;border-radius:999px;font:600 16px 'Geist'">Indisponível</button>
+        <div style="font:400 13px/1.45 'Geist';color:#707070">Formato pílula, altura mínima 52px, largura total no mobile.</div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 11px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">Categorias · Tamanhos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="height:36px;padding:0 16px;display:flex;align-items:center;border-radius:999px;background:#B87353;color:#fff;font:500 14px 'Geist'">Novidades</span>
+          <span style="height:36px;padding:0 16px;display:flex;align-items:center;border-radius:999px;background:#F1EFEC;font:500 14px 'Geist'">Vestidos</span>
+          <span style="height:36px;padding:0 16px;display:flex;align-items:center;border-radius:999px;background:#F1EFEC;font:500 14px 'Geist'">Promoção</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <span style="width:52px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid #E5E5E5;border-radius:14px;font:500 15px 'Geist'">P</span>
+          <span style="width:52px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid #2C2C2C;background:#2C2C2C;color:#fff;border-radius:14px;font:500 15px 'Geist'">M</span>
+          <span style="width:52px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid #E5E5E5;border-radius:14px;font:500 15px 'Geist'">G</span>
+          <span style="position:relative;overflow:hidden;width:52px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid #E5E5E5;border-radius:14px;font:500 15px 'Geist';color:#B0B0B0;background:#FAFAFA">GG<span style="position:absolute;left:-10px;right:-10px;top:50%;height:1px;background:#C4C4C4;transform:rotate(-42deg)"></span></span>
+        </div>
+        <div style="font:400 13px/1.45 'Geist';color:#707070">Ativo em cobre (categoria) e carvão (tamanho). Esgotado: risco diagonal.</div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 11px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">Campos · rótulo flutuante</div>
+        <div style="position:relative">
+          <div style="height:56px;border:1px solid #E5E5E5;border-radius:14px"></div>
+          <span style="position:absolute;left:15px;top:18px;font:400 15px 'Geist';color:#707070">E-mail</span>
+        </div>
+        <div style="position:relative">
+          <div style="height:56px;border:1px solid #B87353;border-radius:14px"></div>
+          <span style="position:absolute;left:15px;top:9px;font:500 11px 'Geist';color:#B87353">E-mail</span>
+          <span style="position:absolute;left:15px;top:27px;font:400 16px 'Geist'">maria@<span style="border-left:1px solid #2C2C2C;margin-left:1px"></span></span>
+        </div>
+        <div style="position:relative">
+          <div style="height:56px;border:1px solid #A3432A;border-radius:14px"></div>
+          <span style="position:absolute;left:15px;top:9px;font:500 11px 'Geist';color:#A3432A">CPF</span>
+          <span style="position:absolute;left:15px;top:27px;font:400 16px 'Geist'">123.456</span>
+        </div>
+        <div style="font:400 13px/1.45 'Geist';color:#707070">Vazio · foco (cobre) · erro. Texto em 16px evita zoom no iOS.</div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:18px">
+        <div style="font:500 11px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">Ícones · traço 1,5px</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px 8px;color:#2C2C2C">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg><span style="font:400 11px 'Geist';color:#707070">Menu</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8h13l-1 12.5h-11z"></path><path d="M9 8V6.5a3 3 0 0 1 6 0V8"></path></svg><span style="font:400 11px 'Geist';color:#707070">Sacola</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"></path></svg><span style="font:400 11px 'Geist';color:#707070">Favoritar</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="#B87353" stroke="#B87353" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"></path></svg><span style="font:400 11px 'Geist';color:#707070">Favorito</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l8.5 8.5-8.5 8.5-8.5-8.5z"></path><path d="M9 12l3-3 3 3-3 3z"></path></svg><span style="font:400 11px 'Geist';color:#707070">Pix</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12.5" rx="1.5"></rect><path d="M3 10h18M6.5 15h4"></path></svg><span style="font:400 11px 'Geist';color:#707070">Cartão</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7h11v9.5h-11zM13.5 10h4l3 3v3.5h-7"></path><circle cx="6.5" cy="17.5" r="1.6"></circle><circle cx="17" cy="17.5" r="1.6"></circle></svg><span style="font:400 11px 'Geist';color:#707070">Frete</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></svg><span style="font:400 11px 'Geist';color:#707070">Seguro</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5L6 4h12l2 5.5M4 9.5h16V20H4zM9.5 20v-5h5v5"></path></svg><span style="font:400 11px 'Geist';color:#707070">Loja</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5"></path></svg><span style="font:400 11px 'Geist';color:#707070">Troca</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:16px;border-bottom:1px solid #DAD8D5;padding-bottom:14px;flex-wrap:wrap">
+      <span style="font:500 13px 'Geist Mono';color:#B87353">D</span>
+      <h2 style="margin:0;font:700 34px/1.1 'Plus Jakarta Sans';letter-spacing:-.02em">Telas</h2>
+      <span style="font:400 14px 'Geist';color:#707070;margin-left:auto">As três telas estão conectadas: toque num produto na vitrine, escolha o tamanho e adicione à sacola.</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font:500 13px 'Geist Mono';color:#B87353">D1</span><span style="font:600 15px 'Geist'">Vitrine</span></div>
+        <div data-screen-label="D1 Vitrine" style="position:relative;width:390px;height:812px;border-radius:40px;overflow:hidden;background:#F8F8F8;border:1px solid #D6D4D0;display:flex;flex-direction:column">
+          <div style="height:44px;flex:0 0 44px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #2C2C2C;border-radius:3px;box-sizing:border-box;padding:1.5px"><span style="display:block;height:100%;width:70%;background:#2C2C2C;border-radius:1px"></span></span></div>
+          <sc-if value="{{ showBrowserBar }}" hint-placeholder-val="{{ true }}">
+            <div style="height:40px;flex:0 0 40px;background:#fff;border-bottom:1px solid #E5E5E5;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;padding:0 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" style="justify-self:center"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              <div style="text-align:center;line-height:1.15"><div style="font:600 12px 'Geist'">Você Fashion</div><div style="font:400 11px 'Geist';color:#707070">vocefashion.com.br</div></div>
+              <div style="justify-self:center;font:700 14px 'Geist';letter-spacing:1px">···</div>
+            </div>
+          </sc-if>
+          <div style="flex:1;overflow-y:auto;position:relative">
+            <div style="position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #E5E5E5">
+              <div style="height:60px;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;padding:0 4px">
+                <button aria-label="Menu" style="width:44px;height:44px;border:0;border-radius:999px;background:#F3F2F0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#2C2C2C"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg></button>
+                <img src="assets/logo-voce-fashion.jpg" alt="Você Fashion" style="height:46px;width:46px;object-fit:cover;justify-self:center;filter:brightness(1.05) contrast(1.15);mix-blend-mode:multiply">
+                <button aria-label="Sacola" style="position:relative;width:44px;height:44px;border:0;border-radius:999px;background:#F3F2F0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#2C2C2C"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8h13l-1 12.5h-11z"></path><path d="M9 8V6.5a3 3 0 0 1 6 0V8"></path></svg><sc-if value="{{ hasBag }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:-2px;right:-3px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#B87353;color:#fff;font:600 10px/17px 'Geist';text-align:center">{{ bagCount }}</span></sc-if></button>
+              </div>
+              <div style="display:flex;gap:8px;overflow-x:auto;padding:4px 16px 12px">
+                <sc-for list="{{ pills }}" as="pl" hint-placeholder-count="6">
+                  <sc-if value="{{ pl.isActive }}"><button onClick="{{ pl.pick }}" style="flex:0 0 auto;height:36px;padding:0 16px;border-radius:999px;border:1px solid #B87353;background:#B87353;color:#fff;font:500 14px 'Geist';white-space:nowrap;cursor:pointer">{{ pl.label }}</button></sc-if>
+                  <sc-if value="{{ pl.notActive }}"><button onClick="{{ pl.pick }}" style="flex:0 0 auto;height:36px;padding:0 16px;border-radius:999px;border:1px solid #F1EFEC;background:#F1EFEC;color:#2C2C2C;font:500 14px 'Geist';white-space:nowrap;cursor:pointer" style-hover="border-color:#2C2C2C">{{ pl.label }}</button></sc-if>
+                </sc-for>
+              </div>
+            </div>
+            <div style="padding:20px 16px 14px;display:flex;align-items:baseline;justify-content:space-between">
+              <h2 style="margin:0;font:700 24px/30px 'Plus Jakarta Sans';letter-spacing:-.02em">{{ listTitle }}</h2>
+              <span style="font:400 13px 'Geist';color:#707070">{{ listCount }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px">
+              <sc-for list="{{ products }}" as="p" hint-placeholder-count="6">
+                <div onClick="{{ p.open }}" style="background:#fff;border-radius:22px;padding:6px;cursor:pointer;display:flex;flex-direction:column">
+                  <div style="position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:repeating-linear-gradient(135deg,#EEE9E3 0 8px,#E7E1DA 8px 16px);display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box">
+                    <span style="font:400 10px/1.4 'Geist Mono';text-transform:uppercase;letter-spacing:.06em;color:#6F655C;text-align:center">{{ p.photo }}</span>
+                    <sc-if value="{{ p.hasOld }}"><span style="position:absolute;top:10px;left:10px;background:#B87353;color:#fff;font:600 11px/1 'Geist';padding:5px 6px;border-radius:999px">{{ p.off }}</span></sc-if>
+                    <button onClick="{{ p.toggleWish }}" aria-label="Favoritar" style="position:absolute;top:8px;right:8px;width:36px;height:36px;border:0;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="{{ p.heartFill }}" stroke="{{ p.heartStroke }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"></path></svg></button>
+                  </div>
+                  <div style="padding:10px 8px 10px;display:flex;flex-direction:column;gap:4px">
+                    <span style="font:500 10px/14px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">{{ p.cat }}</span>
+                    <span style="font:600 16px/21px 'Plus Jakarta Sans';color:#2C2C2C;text-wrap:pretty">{{ p.name }}</span>
+                    <div style="display:flex;gap:6px;align-items:baseline;margin-top:2px">
+                      <span style="font:700 15px 'Geist'">{{ p.price }}</span>
+                      <sc-if value="{{ p.hasOld }}"><span style="font:400 12px 'Geist';color:#8A8A8A;text-decoration:line-through">{{ p.old }}</span></sc-if>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="padding:28px 16px 36px;text-align:center;font:400 13px/1.5 'Geist';color:#707070">Loja física no Centro de Bom Jesus da Lapa · Retire em até 2h</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font:500 13px 'Geist Mono';color:#B87353">D2</span><span style="font:600 15px 'Geist'">Produto</span></div>
+        <div data-screen-label="D2 Produto" style="position:relative;width:390px;height:812px;border-radius:40px;overflow:hidden;background:#fff;border:1px solid #D6D4D0;display:flex;flex-direction:column">
+          <div style="height:44px;flex:0 0 44px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #2C2C2C;border-radius:3px;box-sizing:border-box;padding:1.5px"><span style="display:block;height:100%;width:70%;background:#2C2C2C;border-radius:1px"></span></span></div>
+          <sc-if value="{{ showBrowserBar }}" hint-placeholder-val="{{ true }}">
+            <div style="height:40px;flex:0 0 40px;background:#fff;border-bottom:1px solid #E5E5E5;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;padding:0 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" style="justify-self:center"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              <div style="text-align:center;line-height:1.15"><div style="font:600 12px 'Geist'">Você Fashion</div><div style="font:400 11px 'Geist';color:#707070">vocefashion.com.br</div></div>
+              <div style="justify-self:center;font:700 14px 'Geist';letter-spacing:1px">···</div>
+            </div>
+          </sc-if>
+          <div ref="{{ pdpScrollRef }}" style="flex:1;overflow-y:auto;position:relative">
+            <div style="position:relative;height:420px;background:#EEE9E3;border-radius:0 0 32px 32px;overflow:hidden">
+              <div ref="{{ carRef }}" onScroll="{{ onCarScroll }}" style="display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory">
+                <sc-for list="{{ pdp.slides }}" as="sl" hint-placeholder-count="3">
+                  <div style="flex:0 0 100%;height:100%;scroll-snap-align:start;background:repeating-linear-gradient(135deg,#EEE9E3 0 10px,#E7E1DA 10px 20px);display:flex;align-items:center;justify-content:center">
+                    <span style="font:400 11px 'Geist Mono';text-transform:uppercase;letter-spacing:.08em;color:#6F655C">{{ sl }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none">
+                <button aria-label="Voltar" style="pointer-events:auto;width:44px;height:44px;border:0;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#2C2C2C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+                <div style="display:flex;gap:8px">
+                  <button onClick="{{ pdp.toggleWish }}" aria-label="Favoritar" style="pointer-events:auto;width:44px;height:44px;border:0;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="{{ pdp.heartFill }}" stroke="{{ pdp.heartStroke }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"></path></svg></button>
+                  <button aria-label="Sacola" style="pointer-events:auto;position:relative;width:44px;height:44px;border:0;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#2C2C2C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8h13l-1 12.5h-11z"></path><path d="M9 8V6.5a3 3 0 0 1 6 0V8"></path></svg><sc-if value="{{ hasBag }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:5px;right:4px;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#B87353;color:#fff;font:600 10px/16px 'Geist';text-align:center">{{ bagCount }}</span></sc-if></button>
+                </div>
+              </div>
+              <div style="position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none">
+                <sc-for list="{{ dots }}" as="d" hint-placeholder-count="3">
+                  <span style="height:6px;width:{{ d.w }};border-radius:999px;background:{{ d.bg }};transition:width .2s"></span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="padding:20px 20px 140px;display:flex;flex-direction:column;gap:20px">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:500 11px 'Geist';letter-spacing:.1em;text-transform:uppercase;color:#707070">{{ pdp.cat }}</span>
+                <h1 style="margin:0;font:700 30px/36px 'Plus Jakarta Sans';letter-spacing:-.02em;text-wrap:pretty">{{ pdp.name }}</h1>
+                <div style="display:flex;gap:10px;align-items:baseline;margin-top:4px">
+                  <span style="font:700 24px 'Geist'">{{ pdp.price }}</span>
+                  <sc-if value="{{ pdp.hasOld }}"><span style="font:400 15px 'Geist';color:#8A8A8A;text-decoration:line-through">{{ pdp.old }}</span></sc-if>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px;font:400 14px/20px 'Geist';color:#4A4A4A">
+                  <span>{{ pdp.inst }}</span>
+                  <span><span style="color:#B87353;font-weight:600">{{ pdp.pixPrice }}</span> no Pix</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span style="font:600 14px 'Geist'">Tamanho<sc-if value="{{ pdp.hasSize }}"><span style="font-weight:400;color:#707070"> · {{ pdp.selSize }}</span></sc-if></span>
+                  <a href="#" style="font:400 13px 'Geist';color:#2C2C2C;text-decoration:underline;text-underline-offset:3px">Guia de medidas</a>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <sc-for list="{{ pdp.sizes }}" as="z" hint-placeholder-count="4">
+                    <button onClick="{{ z.pick }}" disabled="{{ z.out }}" aria-label="{{ z.aria }}" style="position:relative;overflow:hidden;width:56px;height:48px;border:1px solid {{ z.border }};background:{{ z.bg }};color:{{ z.color }};border-radius:14px;font:500 15px 'Geist';cursor:{{ z.cursor }}">{{ z.s }}<sc-if value="{{ z.out }}"><span style="position:absolute;left:-10px;right:-10px;top:50%;height:1px;background:#C4C4C4;transform:rotate(-40deg)"></span></sc-if></button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ pdp.sizeErr }}"><span style="font:500 13px 'Geist';color:#A3432A">Escolha um tamanho para continuar.</span></sc-if>
+                <span style="font:400 13px 'Geist';color:#707070">{{ pdp.stockNote }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #E5E5E5;padding-top:18px">
+                <span style="font:600 14px 'Geist'">Descrição</span>
+                <p style="margin:0;font:400 15px/23px 'Geist';color:#4A4A4A;text-wrap:pretty">{{ pdp.desc }}</p>
+                <button onClick="{{ pdp.toggleDesc }}" style="align-self:flex-start;border:0;background:none;padding:6px 0;font:600 14px 'Geist';color:#2C2C2C;text-decoration:underline;text-underline-offset:3px;cursor:pointer">{{ pdp.descLabel }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;border-top:1px solid #E5E5E5">
+                <div style="display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid #E5E5E5">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7h11v9.5h-11zM13.5 10h4l3 3v3.5h-7"></path><circle cx="6.5" cy="17.5" r="1.6"></circle><circle cx="17" cy="17.5" r="1.6"></circle></svg>
+                  <span style="font:400 14px/20px 'Geist'">Entrega grátis em Bom Jesus da Lapa acima de R$ 199</span>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid #E5E5E5">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5"></path></svg>
+                  <span style="font:400 14px/20px 'Geist'">Primeira troca grátis em até 7 dias</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <sc-if value="{{ hasToast }}">
+            <div style="position:absolute;left:16px;right:16px;bottom:104px;z-index:10;background:#2C2C2C;color:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:10px;font:500 14px 'Geist'">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+              <span style="flex:1">{{ toast }}</span>
+              <span style="font-weight:600;text-decoration:underline;text-underline-offset:3px">Ver sacola</span>
+            </div>
+          </sc-if>
+          <div style="position:absolute;left:0;right:0;bottom:0;z-index:9;background:#fff;border-top:1px solid #E5E5E5;padding:12px 16px 30px">
+            <button onClick="{{ addToBag }}" style="width:100%;height:54px;border:0;border-radius:999px;background:#B87353;color:#fff;font:600 16px 'Geist';display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer" style-hover="background:#A6654A" style-active="background:#94583F"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8h13l-1 12.5h-11z"></path><path d="M9 8V6.5a3 3 0 0 1 6 0V8"></path></svg>{{ ctaLabel }}</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font:500 13px 'Geist Mono';color:#B87353">D3</span><span style="font:600 15px 'Geist'">Checkout</span></div>
+        <div data-screen-label="D3 Checkout" style="position:relative;width:390px;height:812px;border-radius:40px;overflow:hidden;background:#F8F8F8;border:1px solid #D6D4D0;display:flex;flex-direction:column">
+          <div style="height:44px;flex:0 0 44px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #2C2C2C;border-radius:3px;box-sizing:border-box;padding:1.5px"><span style="display:block;height:100%;width:70%;background:#2C2C2C;border-radius:1px"></span></span></div>
+          <sc-if value="{{ showBrowserBar }}" hint-placeholder-val="{{ true }}">
+            <div style="height:40px;flex:0 0 40px;background:#fff;border-bottom:1px solid #E5E5E5;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;padding:0 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" style="justify-self:center"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              <div style="text-align:center;line-height:1.15"><div style="font:600 12px 'Geist'">Você Fashion</div><div style="font:400 11px 'Geist';color:#707070">vocefashion.com.br</div></div>
+              <div style="justify-self:center;font:700 14px 'Geist';letter-spacing:1px">···</div>
+            </div>
+          </sc-if>
+          <div style="flex:1;overflow-y:auto;position:relative">
+            <div style="position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #E5E5E5;height:56px;display:grid;grid-template-columns:48px 1fr auto;align-items:center;padding:0 12px 0 4px">
+              <button aria-label="Voltar" style="width:44px;height:44px;border:0;border-radius:999px;background:#F3F2F0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#2C2C2C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+              <span style="font:600 19px 'Plus Jakarta Sans'">Finalizar pedido</span>
+              <span style="display:flex;align-items:center;gap:5px;font:500 12px 'Geist';color:#4A4A4A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></svg>Compra segura</span>
+            </div>
+
+            <div style="padding:12px 12px 150px;display:flex;flex-direction:column;gap:8px">
+              <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px">
+                <button onClick="{{ toggleSummary }}" style="width:100%;min-height:52px;border:0;background:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;cursor:pointer;color:#2C2C2C">
+                  <span style="font:600 14px 'Geist'">Sua sacola · {{ bagLabel }}</span>
+                  <span style="display:flex;align-items:center;gap:8px;font:600 14px 'Geist'">{{ subtotal }}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ summaryRot }};transition:transform .2s"><path d="M6 9l6 6 6-6"></path></svg></span>
+                </button>
+                <sc-if value="{{ summaryOpen }}">
+                  <div style="border-top:1px solid #E5E5E5;padding:4px 16px">
+                    <sc-for list="{{ bagItems }}" as="b" hint-placeholder-count="2">
+                      <div style="display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0">
+                        <div style="width:52px;height:65px;border-radius:12px;background:repeating-linear-gradient(135deg,#EEE9E3 0 5px,#E7E1DA 5px 10px)"></div>
+                        <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                          <span style="font:600 15px/19px 'Plus Jakarta Sans'">{{ b.name }}</span>
+                          <span style="font:400 12px 'Geist';color:#707070">Tamanho {{ b.size }}</span>
+                          <span style="font:700 14px 'Geist';margin-top:2px">{{ b.total }}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;border:1px solid #E5E5E5;border-radius:18px;height:36px">
+                          <button onClick="{{ b.dec }}" aria-label="Diminuir" style="width:34px;height:34px;border:0;background:none;font:400 18px 'Geist';cursor:pointer;color:#2C2C2C">−</button>
+                          <span style="min-width:18px;text-align:center;font:600 14px 'Geist'">{{ b.qty }}</span>
+                          <button onClick="{{ b.inc }}" aria-label="Aumentar" style="width:34px;height:34px;border:0;background:none;font:400 18px 'Geist';cursor:pointer;color:#2C2C2C">+</button>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ bagEmpty }}"><div style="padding:16px 0;font:400 14px 'Geist';color:#707070">Sua sacola está vazia. Adicione peças na tela de produto.</div></sc-if>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="background:#fff;border:1px solid {{ s1.cardBorder }};border-radius:18px">
+                <button onClick="{{ s1.toggle }}" style="width:100%;min-height:60px;border:0;background:none;display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;text-align:left;color:#2C2C2C">
+                  <span style="flex:0 0 26px;height:26px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:600 12px 'Geist';background:{{ s1.badgeBg }};color:{{ s1.badgeColor }};border:1px solid {{ s1.badgeBorder }};box-sizing:border-box">{{ s1.badge }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 18px/22px 'Plus Jakarta Sans'">Identificação</span><sc-if value="{{ s1.showSummary }}"><span style="font:400 13px 'Geist';color:#707070;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s1.summary }}</span></sc-if></span>
+                  <sc-if value="{{ s1.showSummary }}"><span style="font:500 13px 'Geist';text-decoration:underline;text-underline-offset:3px">Editar</span></sc-if>
+                </button>
+                <sc-if value="{{ s1.isOpen }}">
+                  <div style="padding:4px 16px 18px;display:flex;flex-direction:column;gap:12px">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                      <sc-for list="{{ f1 }}" as="f" hint-placeholder-count="4">
+                        <div style="position:relative;grid-column:span {{ f.span }};display:flex;flex-direction:column;gap:4px">
+                          <input type="{{ f.type }}" value="{{ f.value }}" placeholder="{{ f.ph }}" onChange="{{ f.onChange }}" onFocus="{{ f.onFocus }}" onBlur="{{ f.onBlur }}" style="width:100%;height:56px;box-sizing:border-box;padding:22px 14px 6px;border:1px solid {{ f.border }};border-radius:14px;font:400 16px 'Geist';color:#2C2C2C;background:#fff;outline:none;transition:border-color .15s">
+                          <span style="position:absolute;left:15px;top:{{ f.labelTop }};font-family:'Geist';font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};color:{{ f.labelColor }};pointer-events:none;transition:all .15s">{{ f.label }}</span>
+                          <sc-if value="{{ f.hasErr }}"><span style="font:500 12px 'Geist';color:#A3432A">{{ f.err }}</span></sc-if>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <button onClick="{{ next1 }}" style="height:52px;width:100%;background:transparent;color:#2C2C2C;border:1px solid #2C2C2C;border-radius:999px;font:500 16px 'Geist';cursor:pointer" style-hover="background:#2C2C2C;color:#fff">Continuar para entrega</button>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="background:#fff;border:1px solid {{ s2.cardBorder }};border-radius:18px">
+                <button onClick="{{ s2.toggle }}" style="width:100%;min-height:60px;border:0;background:none;display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;text-align:left;color:#2C2C2C">
+                  <span style="flex:0 0 26px;height:26px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:600 12px 'Geist';background:{{ s2.badgeBg }};color:{{ s2.badgeColor }};border:1px solid {{ s2.badgeBorder }};box-sizing:border-box">{{ s2.badge }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 18px/22px 'Plus Jakarta Sans';color:{{ s2.titleColor }}">Entrega</span><sc-if value="{{ s2.showSummary }}"><span style="font:400 13px 'Geist';color:#707070;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s2.summary }}</span></sc-if></span>
+                  <sc-if value="{{ s2.showSummary }}"><span style="font:500 13px 'Geist';text-decoration:underline;text-underline-offset:3px">Editar</span></sc-if>
+                </button>
+                <sc-if value="{{ s2.isOpen }}">
+                  <div style="padding:4px 16px 18px;display:flex;flex-direction:column;gap:14px">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start">
+                      <sc-for list="{{ fCep }}" as="f" hint-placeholder-count="1">
+                        <div style="position:relative;display:flex;flex-direction:column;gap:4px">
+                          <input type="tel" value="{{ f.value }}" placeholder="{{ f.ph }}" onChange="{{ f.onChange }}" onFocus="{{ f.onFocus }}" onBlur="{{ f.onBlur }}" style="width:100%;height:56px;box-sizing:border-box;padding:22px 14px 6px;border:1px solid {{ f.border }};border-radius:14px;font:400 16px 'Geist';color:#2C2C2C;background:#fff;outline:none;transition:border-color .15s">
+                          <span style="position:absolute;left:15px;top:{{ f.labelTop }};font-family:'Geist';font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};color:{{ f.labelColor }};pointer-events:none;transition:all .15s">{{ f.label }}</span>
+                          <sc-if value="{{ f.hasErr }}"><span style="font:500 12px 'Geist';color:#A3432A">{{ f.err }}</span></sc-if>
+                        </div>
+                      </sc-for>
+                      <button onClick="{{ calcCep }}" style="height:56px;padding:0 18px;background:#2C2C2C;color:#fff;border:0;border-radius:999px;font:600 15px 'Geist';cursor:pointer">Calcular</button>
+                    </div>
+                    <sc-if value="{{ cepIdle }}"><span style="font:400 13px/1.45 'Geist';color:#707070;margin-top:-6px">Em Bom Jesus da Lapa? Use 47600-000 para ver retirada e entrega no mesmo dia.</span></sc-if>
+                    <sc-if value="{{ cepDone }}">
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <span style="font:500 13px 'Geist';color:#4A4A4A">{{ cepCity }}</span>
+                        <sc-for list="{{ shipOpts }}" as="o" hint-placeholder-count="3">
+                          <button onClick="{{ o.pick }}" style="display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:64px;padding:10px 14px;border:1px solid {{ o.border }};background:{{ o.bg }};border-radius:18px;cursor:pointer;text-align:left;color:#2C2C2C">
+                            <span style="width:20px;height:20px;border-radius:999px;border:1.5px solid {{ o.ring }};box-sizing:border-box;display:flex;align-items:center;justify-content:center"><sc-if value="{{ o.sel }}"><span style="width:10px;height:10px;border-radius:999px;background:#B87353"></span></sc-if></span>
+                            <span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 14px 'Geist'">{{ o.name }}</span><span style="font:400 12px/16px 'Geist';color:#707070">{{ o.sub }}</span></span>
+                            <span style="font:700 14px 'Geist';color:{{ o.priceColor }}">{{ o.priceLabel }}</span>
+                          </button>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ needsAddress }}">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                          <sc-for list="{{ fAddr }}" as="f" hint-placeholder-count="3">
+                            <div style="position:relative;grid-column:span {{ f.span }};display:flex;flex-direction:column;gap:4px">
+                              <input type="{{ f.type }}" value="{{ f.value }}" placeholder="{{ f.ph }}" onChange="{{ f.onChange }}" onFocus="{{ f.onFocus }}" onBlur="{{ f.onBlur }}" style="width:100%;height:56px;box-sizing:border-box;padding:22px 14px 6px;border:1px solid {{ f.border }};border-radius:14px;font:400 16px 'Geist';color:#2C2C2C;background:#fff;outline:none;transition:border-color .15s">
+                              <span style="position:absolute;left:15px;top:{{ f.labelTop }};font-family:'Geist';font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};color:{{ f.labelColor }};pointer-events:none;transition:all .15s">{{ f.label }}</span>
+                              <sc-if value="{{ f.hasErr }}"><span style="font:500 12px 'Geist';color:#A3432A">{{ f.err }}</span></sc-if>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <button onClick="{{ next2 }}" style="height:52px;width:100%;background:transparent;color:#2C2C2C;border:1px solid #2C2C2C;border-radius:999px;font:500 16px 'Geist';cursor:pointer" style-hover="background:#2C2C2C;color:#fff">Continuar para pagamento</button>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="background:#fff;border:1px solid {{ s3.cardBorder }};border-radius:18px">
+                <button onClick="{{ s3.toggle }}" style="width:100%;min-height:60px;border:0;background:none;display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;text-align:left;color:#2C2C2C">
+                  <span style="flex:0 0 26px;height:26px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:600 12px 'Geist';background:{{ s3.badgeBg }};color:{{ s3.badgeColor }};border:1px solid {{ s3.badgeBorder }};box-sizing:border-box">{{ s3.badge }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 18px/22px 'Plus Jakarta Sans';color:{{ s3.titleColor }}">Pagamento</span><sc-if value="{{ s3.showSummary }}"><span style="font:400 13px 'Geist';color:#707070">{{ s3.summary }}</span></sc-if></span>
+                  <sc-if value="{{ s3.showSummary }}"><span style="font:500 13px 'Geist';text-decoration:underline;text-underline-offset:3px">Editar</span></sc-if>
+                </button>
+                <sc-if value="{{ s3.isOpen }}">
+                  <div style="padding:4px 16px 18px;display:flex;flex-direction:column;gap:10px">
+                    <button onClick="{{ pickPix }}" style="position:relative;display:grid;grid-template-columns:20px 28px minmax(0,1fr);gap:12px;align-items:center;min-height:76px;padding:12px 14px;border:1px solid {{ pix.border }};background:{{ pix.bg }};border-radius:18px;cursor:pointer;text-align:left;color:#2C2C2C">
+                      <span style="width:20px;height:20px;border-radius:999px;border:1.5px solid {{ pix.ring }};box-sizing:border-box;display:flex;align-items:center;justify-content:center"><sc-if value="{{ pix.sel }}"><span style="width:10px;height:10px;border-radius:999px;background:#B87353"></span></sc-if></span>
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B87353" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l8.5 8.5-8.5 8.5-8.5-8.5z"></path><path d="M9 12l3-3 3 3-3 3z"></path></svg>
+                      <span style="display:flex;flex-direction:column;gap:3px">
+                        <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:600 15px 'Geist'">Pix</span><span style="background:#B87353;color:#fff;font:600 10px/1 'Geist';letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:999px">Recomendado</span></span>
+                        <span style="font:400 13px/18px 'Geist';color:#4A4A4A">{{ pixLine }}</span>
+                      </span>
+                    </button>
+                    <button onClick="{{ pickCard }}" style="display:grid;grid-template-columns:20px 28px minmax(0,1fr);gap:12px;align-items:center;min-height:68px;padding:12px 14px;border:1px solid {{ card.border }};background:{{ card.bg }};border-radius:18px;cursor:pointer;text-align:left;color:#2C2C2C">
+                      <span style="width:20px;height:20px;border-radius:999px;border:1.5px solid {{ card.ring }};box-sizing:border-box;display:flex;align-items:center;justify-content:center"><sc-if value="{{ card.sel }}"><span style="width:10px;height:10px;border-radius:999px;background:#B87353"></span></sc-if></span>
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12.5" rx="1.5"></rect><path d="M3 10h18M6.5 15h4"></path></svg>
+                      <span style="display:flex;flex-direction:column;gap:3px"><span style="font:600 15px 'Geist'">Cartão de crédito</span><span style="font:400 13px/18px 'Geist';color:#4A4A4A">{{ cardLine }}</span></span>
+                    </button>
+                    <sc-if value="{{ card.sel }}">
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+                        <sc-for list="{{ fCard }}" as="f" hint-placeholder-count="4">
+                          <div style="position:relative;grid-column:span {{ f.span }};display:flex;flex-direction:column;gap:4px">
+                            <input type="{{ f.type }}" value="{{ f.value }}" placeholder="{{ f.ph }}" onChange="{{ f.onChange }}" onFocus="{{ f.onFocus }}" onBlur="{{ f.onBlur }}" style="width:100%;height:56px;box-sizing:border-box;padding:22px 14px 6px;border:1px solid {{ f.border }};border-radius:14px;font:400 16px 'Geist';color:#2C2C2C;background:#fff;outline:none;transition:border-color .15s">
+                            <span style="position:absolute;left:15px;top:{{ f.labelTop }};font-family:'Geist';font-size:{{ f.labelSize }};font-weight:{{ f.labelWeight }};color:{{ f.labelColor }};pointer-events:none;transition:all .15s">{{ f.label }}</span>
+                            <sc-if value="{{ f.hasErr }}"><span style="font:500 12px 'Geist';color:#A3432A">{{ f.err }}</span></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <div style="display:flex;align-items:center;gap:8px;padding-top:6px;font:400 12px/16px 'Geist';color:#4A4A4A">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></svg>
+                      Pagamento criptografado. Não guardamos os dados do seu cartão.
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="background:#fff;border:1px solid #E5E5E5;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;font:400 14px 'Geist'">
+                <div style="display:flex;justify-content:space-between"><span style="color:#4A4A4A">Subtotal</span><span>{{ subtotal }}</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="color:#4A4A4A">Frete</span><span>{{ freteLabel }}</span></div>
+                <sc-if value="{{ hasPixDisc }}"><div style="display:flex;justify-content:space-between;color:#B87353;font-weight:500"><span>Desconto Pix ({{ pixPct }}%)</span><span>− {{ pixDisc }}</span></div></sc-if>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;z-index:9;background:#fff;border-top:1px solid #E5E5E5;padding:12px 16px 30px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center">
+            <div style="display:flex;flex-direction:column;gap:1px">
+              <span style="font:400 12px 'Geist';color:#707070">Total</span>
+              <span style="font:700 21px 'Geist'">{{ total }}</span>
+              <span style="font:500 11px 'Geist';color:#B87353">{{ totalNote }}</span>
+            </div>
+            <button onClick="{{ finish }}" style="height:54px;border:0;border-radius:999px;background:#B87353;color:#fff;font:600 16px 'Geist';cursor:pointer" style-hover="background:#A6654A" style-active="background:#94583F">Finalizar Compra</button>
+          </div>
+          <sc-if value="{{ success }}">
+            <div style="position:absolute;inset:0;z-index:20;background:#fff;display:flex;flex-direction:column;align-items:center;padding:96px 28px 40px;gap:18px;text-align:center;box-sizing:border-box;overflow-y:auto">
+              <span style="width:56px;height:56px;border-radius:999px;background:#B87353;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+              <h2 style="margin:0;font:700 30px/36px 'Plus Jakarta Sans';letter-spacing:-.02em">{{ successTitle }}</h2>
+              <p style="margin:0;font:400 15px/22px 'Geist';color:#4A4A4A;text-wrap:pretty">{{ successText }}</p>
+              <sc-if value="{{ pix.sel }}">
+                <div style="width:184px;height:184px;border:1px solid #E5E5E5;border-radius:18px;background:repeating-linear-gradient(135deg,#F3F3F3 0 6px,#EAEAEA 6px 12px);display:flex;align-items:center;justify-content:center"><span style="font:400 10px 'Geist Mono';text-transform:uppercase;letter-spacing:.08em;color:#707070">QR Code Pix</span></div>
+                <button onClick="{{ copyPix }}" style="height:52px;width:100%;background:#B87353;color:#fff;border:0;border-radius:999px;font:600 16px 'Geist';cursor:pointer">{{ copyLabel }}</button>
+                <span style="font:400 13px 'Geist';color:#707070">O código expira em 30 minutos.</span>
+              </sc-if>
+              <button onClick="{{ resetCheckout }}" style="height:52px;width:100%;background:transparent;color:#2C2C2C;border:1px solid #2C2C2C;border-radius:999px;font:500 16px 'Geist';cursor:pointer;margin-top:auto">Voltar para a loja</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;ctaLabel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Adicionar à Sacola&quot;,&quot;Comprar Agora&quot;],&quot;default&quot;:&quot;Adicionar à Sacola&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Produto&quot;},&quot;showBrowserBar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Telas&quot;},&quot;pixDiscount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:10,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;default&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Checkout&quot;}}">
+const PRODUCTS = [
+  { id: 1, cat: 'Vestidos', name: 'Vestido Midi Linho Areia', price: 189.9, old: null, photo: 'foto · vestido midi linho', sizes: { P: 1, M: 3, G: 2, GG: 0 },
+    desc: 'Vestido midi em linho com toque macio, alças finas reguláveis e fenda lateral discreta. Fresco para o calor da Lapa e elegante do almoço ao fim de tarde.',
+    more: 'Forro em viscose, zíper invisível nas costas. Composição: 55% linho, 45% viscose. Lavar à mão, secar à sombra. A modelo veste M e tem 1,68 m.' },
+  { id: 2, cat: 'Blusas', name: 'Blusa Ombro a Ombro Lastex', price: 89.9, old: null, photo: 'foto · blusa ombro a ombro', sizes: { P: 4, M: 2, G: 1, GG: 1 },
+    desc: 'Blusa ombro a ombro com lastex no decote e mangas bufantes. Combina com jeans, saia ou short.',
+    more: 'Tecido leve que não amassa na mala. Composição: 100% viscose. A modelo veste P.' },
+  { id: 3, cat: 'Conjuntos', name: 'Conjunto Alfaiataria Off-White', price: 259.9, old: null, photo: 'foto · conjunto alfaiataria', sizes: { P: 2, M: 2, G: 0, GG: 0 },
+    desc: 'Blazer cropped e calça pantalona em alfaiataria leve. Use junto ou separado para multiplicar os looks.',
+    more: 'Calça com cós alto e elástico nas costas. Composição: 96% poliéster, 4% elastano. A modelo veste P.' },
+  { id: 4, cat: 'Saias', name: 'Saia Midi Plissada Caramelo', price: 129.9, old: 159.9, photo: 'foto · saia midi plissada', sizes: { P: 1, M: 2, G: 2, GG: 1 },
+    desc: 'Saia midi plissada com cós de elástico embutido. Movimento bonito ao caminhar, do trabalho ao culto de domingo.',
+    more: 'Forro curto, não marca. Composição: 100% poliéster. Comprimento: 78 cm no M.' },
+  { id: 5, cat: 'Vestidos', name: 'Vestido Tubinho Canelado', price: 149.9, old: null, photo: 'foto · vestido tubinho', sizes: { P: 0, M: 2, G: 3, GG: 2 },
+    desc: 'Tubinho canelado que abraça o corpo sem apertar. Gola alta e comprimento acima do joelho.',
+    more: 'Malha encorpada, não fica transparente. Composição: 92% viscose, 8% elastano.' },
+  { id: 6, cat: 'Blusas', name: 'Cropped Tricô Manga Bufante', price: 79.9, old: 99.9, photo: 'foto · cropped tricô', sizes: { P: 2, M: 1, G: 0, GG: 0 },
+    desc: 'Cropped em tricô leve com manga bufante curta. Perfeito para as noites mais frescas.',
+    more: 'Ponto aberto, ideal com top por baixo. Composição: 100% acrílico. Lavar à mão.' },
+];
+const CATS = ['Novidades', 'Vestidos', 'Blusas', 'Saias', 'Conjuntos', 'Promoção'];
+const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const dg = s => (s || '').replace(/\D/g, '');
+const MASK = {
+  cel: s => { const d = dg(s).slice(0, 11); if (!d) return ''; if (d.length <= 2) return '(' + d; if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`; return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`; },
+  cpf: s => { const d = dg(s).slice(0, 11); let o = d.slice(0, 3); if (d.length > 3) o += '.' + d.slice(3, 6); if (d.length > 6) o += '.' + d.slice(6, 9); if (d.length > 9) o += '-' + d.slice(9); return o; },
+  cep: s => { const d = dg(s).slice(0, 8); return d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d; },
+  card: s => dg(s).slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 '),
+  val: s => { const d = dg(s).slice(0, 4); return d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d; },
+  cvv: s => dg(s).slice(0, 4),
+};
+const C = '#B87353', INK = '#2C2C2C', LINE = '#E5E5E5', ERR = '#A3432A', TINT = '#FAF4F1';
+
+class Component extends DCLogic {
+  state = {
+    cat: 'Novidades', wish: { 4: true }, pdpId: 1, slide: 0, selSize: null, sizeErr: false, descOpen: false,
+    bag: [{ pid: 1, size: 'M', qty: 1 }, { pid: 2, size: 'P', qty: 1 }], toast: '',
+    values: {}, focus: null, errors: {}, open: 1, done: {}, cepDone: false, cepLocal: false, ship: null, pay: 'pix',
+    summaryOpen: true, success: false, copied: false,
+  };
+  carRef = React.createRef();
+  pdpScrollRef = React.createRef();
+
+  componentDidUpdate(_, prev) {
+    if (prev.pdpId !== this.state.pdpId) {
+      if (this.carRef.current) this.carRef.current.scrollLeft = 0;
+      if (this.pdpScrollRef.current) this.pdpScrollRef.current.scrollTop = 0;
+    }
+  }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  pct() { return this.props.pixDiscount ?? 5; }
+  subtotal() { return this.state.bag.reduce((a, b) => a + PRODUCTS.find(p => p.id === b.pid).price * b.qty, 0); }
+  shipOptions() {
+    const sub = this.subtotal(), o = [];
+    if (this.state.cepLocal) {
+      o.push({ id: 'retirada', name: 'Retirar na loja', sub: 'Centro · Bom Jesus da Lapa · pronto em 2h', price: 0 });
+      o.push({ id: 'moto', name: 'Entrega Você Fashion', sub: sub >= 199 ? 'Motoboy · hoje até 19h · grátis acima de R$ 199' : 'Motoboy · hoje até 19h', price: sub >= 199 ? 0 : 7 });
+    }
+    o.push({ id: 'pac', name: 'Correios PAC', sub: '6 a 9 dias úteis', price: 22.9 });
+    o.push({ id: 'sedex', name: 'Correios SEDEX', sub: '2 a 4 dias úteis', price: 39.9 });
+    return o;
+  }
+
+  setVal(key, raw, mask) {
+    const v = mask ? MASK[mask](raw) : raw;
+    this.setState(s => {
+      const patch = { values: { ...s.values, [key]: v }, errors: { ...s.errors, [key]: undefined } };
+      if (key === 'cep' && s.cepDone) Object.assign(patch, { cepDone: false, ship: null, done: { ...s.done, 2: false } });
+      return patch;
+    });
+  }
+  field(key, label, o = {}) {
+    const v = this.state.values[key] || '', foc = this.state.focus === key, err = this.state.errors[key], up = foc || v.length > 0;
+    return {
+      key, label, value: v, type: o.type || 'text', span: o.span || 2, ph: foc ? (o.ph || '') : '',
+      labelTop: up ? '8px' : '18px', labelSize: up ? '11px' : '15px', labelWeight: up ? 500 : 400,
+      labelColor: err ? ERR : foc ? C : '#707070', border: err ? ERR : foc ? C : LINE,
+      err: err || '', hasErr: !!err,
+      onChange: e => this.setVal(key, e.target.value, o.mask),
+      onFocus: () => this.setState({ focus: key }),
+      onBlur: () => this.setState(s => (s.focus === key ? { focus: null } : null)),
+    };
+  }
+  validate(n) {
+    const v = this.state.values, e = {};
+    if (n === 1) {
+      if (!/\S+\s+\S+/.test(v.nome || '')) e.nome = 'Informe nome e sobrenome';
+      if (!/^\S+@\S+\.\S{2,}$/.test(v.email || '')) e.email = 'Confira seu e-mail';
+      if (dg(v.cel).length < 11) e.cel = 'Celular com DDD';
+      if (dg(v.cpf).length !== 11) e.cpf = 'CPF incompleto';
+    }
+    if (n === 2) {
+      if (!this.state.cepDone) e.cep = 'Calcule o frete pelo CEP';
+      else if (this.state.ship !== 'retirada') {
+        if (!(v.rua || '').trim()) e.rua = 'Informe a rua';
+        if (!(v.num || '').trim()) e.num = 'Informe o nº';
+        if (!(v.bairro || '').trim()) e.bairro = 'Informe o bairro';
+      }
+    }
+    if (n === 3 && this.state.pay === 'card') {
+      if (dg(v.cartao).length < 16) e.cartao = 'Número incompleto';
+      if (!(v.titular || '').trim()) e.titular = 'Como está no cartão';
+      if (dg(v.validade).length !== 4) e.validade = 'MM/AA';
+      if (dg(v.cvv).length < 3) e.cvv = '3 dígitos';
+    }
+    return e;
+  }
+  next(n) {
+    const e = this.validate(n);
+    if (Object.keys(e).length) { this.setState({ errors: e }); return; }
+    this.setState(s => ({ errors: {}, done: { ...s.done, [n]: true }, open: n < 3 ? n + 1 : 0 }));
+  }
+  toggleStep(n) {
+    const { open, done } = this.state;
+    if (n > 1 && !done[n - 1]) return;
+    this.setState({ open: open === n ? 0 : n, errors: {} });
+  }
+  calcCep() {
+    const d = dg(this.state.values.cep);
+    if (d.length !== 8) { this.setState(s => ({ errors: { ...s.errors, cep: 'CEP com 8 dígitos' } })); return; }
+    const local = d.startsWith('476');
+    this.setState({ cepDone: true, cepLocal: local, ship: local ? 'moto' : 'pac' });
+  }
+  finish() {
+    if (!this.state.bag.length) return;
+    for (const n of [1, 2, 3]) {
+      const e = this.validate(n);
+      if (Object.keys(e).length) { this.setState({ open: n, errors: e }); return; }
+    }
+    this.setState({ success: true, done: { 1: true, 2: true, 3: true }, open: 0 });
+  }
+  step(n, title) {
+    const { open, done } = this.state, isOpen = open === n, isDone = !!done[n], locked = n > 1 && !done[n - 1];
+    return {
+      isOpen, toggle: () => this.toggleStep(n), showSummary: isDone && !isOpen,
+      badge: isDone && !isOpen ? '✓' : String(n),
+      badgeBg: isDone && !isOpen ? C : isOpen ? INK : '#fff', badgeColor: isDone || isOpen ? '#fff' : '#707070',
+      badgeBorder: isDone && !isOpen ? C : isOpen ? INK : LINE,
+      cardBorder: isOpen ? INK : LINE, titleColor: locked ? '#8A8A8A' : INK,
+    };
+  }
+  addToBag() {
+    const { selSize, pdpId } = this.state;
+    if (!selSize) { this.setState({ sizeErr: true }); return; }
+    this.setState(s => {
+      const bag = [...s.bag], i = bag.findIndex(b => b.pid === pdpId && b.size === selSize);
+      if (i >= 0) bag[i] = { ...bag[i], qty: bag[i].qty + 1 }; else bag.push({ pid: pdpId, size: selSize, qty: 1 });
+      return { bag, toast: `Tamanho ${selSize} adicionado`, summaryOpen: true };
+    });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: '' }), 2600);
+  }
+  toggleWish(id) { this.setState(s => ({ wish: { ...s.wish, [id]: !s.wish[id] } })); }
+  changeQty(i, d) {
+    this.setState(s => {
+      const bag = [...s.bag]; const q = bag[i].qty + d;
+      if (q <= 0) bag.splice(i, 1); else bag[i] = { ...bag[i], qty: q };
+      return { bag };
+    });
+  }
+
+  renderVals() {
+    const s = this.state, pct = this.pct();
+    const filtered = PRODUCTS.filter(p => s.cat === 'Novidades' ? true : s.cat === 'Promoção' ? !!p.old : p.cat === s.cat);
+    const heart = on => ({ heartFill: on ? C : 'none', heartStroke: on ? C : INK });
+    const products = filtered.map(p => ({
+      ...p, price: brl(p.price), old: p.old ? brl(p.old) : '', hasOld: !!p.old,
+      off: p.old ? `−${Math.round((1 - p.price / p.old) * 100)}%` : '', ...heart(!!s.wish[p.id]),
+      open: () => this.setState({ pdpId: p.id, selSize: null, sizeErr: false, descOpen: false, slide: 0 }),
+      toggleWish: e => { e.stopPropagation(); this.toggleWish(p.id); },
+    }));
+    const pills = CATS.map(c => ({ label: c, isActive: c === s.cat, notActive: c !== s.cat, pick: () => this.setState({ cat: c }) }));
+
+    const p = PRODUCTS.find(x => x.id === s.pdpId);
+    const stock = s.selSize ? p.sizes[s.selSize] : null;
+    const pdp = {
+      cat: p.cat, name: p.name, price: brl(p.price), old: p.old ? brl(p.old) : '', hasOld: !!p.old,
+      inst: `ou 3x de ${brl(p.price / 3)} sem juros`, pixPrice: brl(p.price * (1 - pct / 100)),
+      slides: [`${p.photo} · frente`, `${p.photo} · costas`, `${p.photo} · detalhe`],
+      desc: s.descOpen ? `${p.desc} ${p.more}` : p.desc, descLabel: s.descOpen ? 'Ler menos' : 'Ler mais',
+      toggleDesc: () => this.setState(x => ({ descOpen: !x.descOpen })),
+      ...heart(!!s.wish[p.id]), toggleWish: () => this.toggleWish(p.id),
+      hasSize: !!s.selSize, selSize: s.selSize || '', sizeErr: s.sizeErr,
+      stockNote: stock === 1 ? 'Última peça neste tamanho.' : stock ? `${stock} peças disponíveis.` : 'Tamanhos riscados estão esgotados.',
+      sizes: ['P', 'M', 'G', 'GG'].map(z => {
+        const out = !p.sizes[z], sel = s.selSize === z;
+        return { s: z, out, aria: out ? `${z} esgotado` : `Tamanho ${z}`,
+          border: sel ? INK : LINE, bg: sel ? INK : out ? '#FAFAFA' : '#fff', color: sel ? '#fff' : out ? '#B0B0B0' : INK,
+          cursor: out ? 'not-allowed' : 'pointer', pick: () => this.setState({ selSize: z, sizeErr: false }) };
+      }),
+    };
+    const dots = [0, 1, 2].map(i => ({ w: i === s.slide ? '18px' : '6px', bg: i === s.slide ? INK : 'rgba(44,44,44,.28)' }));
+    const bagCount = s.bag.reduce((a, b) => a + b.qty, 0);
+
+    const sub = this.subtotal(), opts = this.shipOptions(), shipSel = opts.find(o => o.id === s.ship);
+    const frete = s.cepDone && shipSel ? shipSel.price : null;
+    const disc = s.pay === 'pix' ? sub * pct / 100 : 0;
+    const total = sub + (frete || 0) - disc;
+    const v = s.values;
+    const s1 = { ...this.step(1), summary: [v.nome, v.email].filter(Boolean).join(' · ') };
+    const s2 = { ...this.step(2), summary: shipSel ? `${shipSel.name} · ${shipSel.price ? brl(shipSel.price) : 'Grátis'}` : '' };
+    const s3 = { ...this.step(3), summary: s.pay === 'pix' ? `Pix · ${pct}% de desconto` : `Cartão · 3x de ${brl(total / 3)}` };
+    const radio = sel => ({ sel, border: sel ? C : LINE, bg: sel ? TINT : '#fff', ring: sel ? C : '#B5B5B5' });
+
+    return {
+      showBrowserBar: this.props.showBrowserBar ?? true,
+      ctaLabel: this.props.ctaLabel ?? 'Adicionar à Sacola',
+      pills, products, listTitle: s.cat, listCount: `${filtered.length} ${filtered.length === 1 ? 'peça' : 'peças'}`,
+      hasBag: bagCount > 0, bagCount,
+      pdp, dots, carRef: this.carRef, pdpScrollRef: this.pdpScrollRef,
+      onCarScroll: e => { const el = e.currentTarget; const i = Math.round(el.scrollLeft / el.clientWidth); if (i !== this.state.slide) this.setState({ slide: i }); },
+      addToBag: () => this.addToBag(), hasToast: !!s.toast, toast: s.toast,
+
+      toggleSummary: () => this.setState(x => ({ summaryOpen: !x.summaryOpen })), summaryOpen: s.summaryOpen,
+      summaryRot: s.summaryOpen ? 'rotate(180deg)' : 'none',
+      bagLabel: `${bagCount} ${bagCount === 1 ? 'item' : 'itens'}`, bagEmpty: !s.bag.length,
+      bagItems: s.bag.map((b, i) => { const pr = PRODUCTS.find(x => x.id === b.pid); return { name: pr.name, size: b.size, qty: b.qty, total: brl(pr.price * b.qty), inc: () => this.changeQty(i, 1), dec: () => this.changeQty(i, -1) }; }),
+      s1, s2, s3,
+      f1: [this.field('nome', 'Nome completo', { ph: 'Maria da Silva' }), this.field('email', 'E-mail', { type: 'email', ph: 'voce@email.com' }),
+        this.field('cel', 'Celular (WhatsApp)', { type: 'tel', mask: 'cel', ph: '(77) 99999-0000', span: 1 }), this.field('cpf', 'CPF', { type: 'tel', mask: 'cpf', ph: '000.000.000-00', span: 1 })],
+      next1: () => this.next(1), next2: () => this.next(2),
+      fCep: [this.field('cep', 'CEP', { type: 'tel', mask: 'cep', ph: '47600-000' })], calcCep: () => this.calcCep(),
+      cepIdle: !s.cepDone, cepDone: s.cepDone,
+      cepCity: s.cepLocal ? 'Bom Jesus da Lapa — BA' : 'Envio pelos Correios',
+      shipOpts: opts.map(o => ({ ...o, ...radio(o.id === s.ship), priceLabel: o.price ? brl(o.price) : 'Grátis', priceColor: o.price ? INK : C, pick: () => this.setState({ ship: o.id }) })),
+      needsAddress: s.cepDone && s.ship !== 'retirada',
+      fAddr: [this.field('rua', 'Rua / Avenida'), this.field('num', 'Número', { type: 'tel', span: 1 }), this.field('bairro', 'Bairro', { span: 1 }), this.field('comp', 'Complemento (opcional)')],
+      pix: radio(s.pay === 'pix'), card: radio(s.pay === 'card'),
+      pickPix: () => this.setState({ pay: 'pix', errors: {} }), pickCard: () => this.setState({ pay: 'card' }),
+      pixLine: pct ? `${pct}% de desconto · aprovação na hora` : 'Aprovação na hora',
+      cardLine: `Até 3x de ${brl((sub + (frete || 0)) / 3)} sem juros`,
+      fCard: [this.field('cartao', 'Número do cartão', { type: 'tel', mask: 'card', ph: '0000 0000 0000 0000' }), this.field('titular', 'Nome impresso no cartão'),
+        this.field('validade', 'Validade', { type: 'tel', mask: 'val', ph: 'MM/AA', span: 1 }), this.field('cvv', 'CVV', { type: 'tel', mask: 'cvv', ph: '123', span: 1 })],
+      subtotal: brl(sub), freteLabel: frete === null ? 'Informe o CEP' : frete ? brl(frete) : 'Grátis',
+      hasPixDisc: disc > 0, pixDisc: brl(disc), pixPct: pct, total: brl(total),
+      totalNote: s.pay === 'pix' && disc > 0 ? `Economia de ${brl(disc)} no Pix` : 'em até 3x sem juros',
+      finish: () => this.finish(), success: s.success,
+      successTitle: s.pay === 'pix' ? 'Quase lá!' : 'Pedido confirmado!',
+      successText: s.pay === 'pix' ? `Pague ${brl(total)} com o Pix para confirmar seu pedido #VF-2611. Enviamos os detalhes no seu WhatsApp.` : `Pagamento aprovado. Pedido #VF-2611 — acompanhe tudo pelo WhatsApp.`,
+      copyPix: () => this.setState({ copied: true }), copyLabel: s.copied ? 'Código copiado ✓' : 'Copiar código Pix',
+      resetCheckout: () => this.setState({ success: false, copied: false, open: 1, done: {}, values: {}, errors: {}, cepDone: false, ship: null, pay: 'pix' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

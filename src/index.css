@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* Design tokens — Você Fashion (ver docs/design/handoff.md) */
+@theme {
+  --color-charcoal: #2c2c2c;
+  --color-copper: #b87353;
+  --color-copper-hover: #a6654a;
+  --color-copper-active: #94583f;
+  --color-copper-tint: #faf4f1;
+  --color-alabaster: #f8f8f8;
+  --color-line: #e5e5e5;
+  --color-chip: #f1efec;
+  --color-icon-btn: #f3f2f0;
+  --color-muted: #707070;
+  --color-body-2: #4a4a4a;
+  --color-strike: #8a8a8a;
+  --color-disabled-bg: #ededed;
+  --color-disabled-fg: #8a8a8a;
+  --color-out-bg: #fafafa;
+  --color-out-fg: #b0b0b0;
+  --color-out-line: #c4c4c4;
+  --color-error: #a3432a;
+  --color-ring-off: #b5b5b5;
+  --color-ph-a: #eee9e3;
+  --color-ph-b: #e7e1da;
+  --color-backdrop: #efeeec;
+
+  /* Status (admin) */
+  --color-ok: #3f7d5a;
+  --color-ok-tint: #edf5f0;
+  --color-info: #3d6a99;
+  --color-info-tint: #eef3f9;
+  --color-error-tint: #f8ece8;
+
+  --radius-thumb: 12px;
+  --radius-field: 14px;
+  --radius-card: 18px;
+  --radius-tile: 22px;
+}
+
+@theme {
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Espaço reservado pelas barras fixas no rodapé (inclui a área segura do iPhone). */
+@utility pb-safe-bar {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-alabaster);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+}
+
+@media (min-width: 481px) {
+  body {
+    background: var(--color-backdrop);
+  }
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input::placeholder {
+  color: #a8a8a8;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 2px;
+}
