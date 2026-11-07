@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import { DEMO_ADMIN } from "@/admin/demo-credentials";
 import { reloadDb } from "@/lib/db";
 import { supabase } from "@/lib/supabase";
+import { pageUrl } from "@/lib/asset";
 
 /**
  * Sessão do painel.
@@ -89,4 +90,37 @@ export async function logout() {
   }
   window.sessionStorage.removeItem(KEY);
   set(null);
+}
+
+/** Rota que recebe o link do e-mail de recuperação. */
+export const RECOVERY_PATH = "/admin/nova-senha";
+
+/** Envia o e-mail com o link para criar uma nova senha. Devolve null ou a mensagem de erro. */
+export async function requestPasswordReset(email: string): Promise<string | null> {
+  if (!supabase) return "No modo demonstração não há recuperação de senha.";
+  const redirectTo = new URL(pageUrl(RECOVERY_PATH), window.location.origin).href;
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo });
+  if (!error) return null;
+  return error.status === 429
+    ? "Muitos pedidos seguidos. Espere alguns minutos e tente de novo."
+    : "Não foi possível enviar o e-mail agora. Tente de novo.";
+}
+
+/** Há sessão vinda do link de recuperação? (o cliente do Supabase lê o link ao abrir a página) */
+export async function hasRecoverySession(): Promise<boolean> {
+  if (!supabase) return false;
+  const { data } = await supabase.auth.getSession();
+  return !!data.session;
+}
+
+/** Grava a nova senha e entra no painel. Devolve null ou a mensagem de erro. */
+export async function setNewPassword(password: string): Promise<string | null> {
+  if (!supabase) return "No modo demonstração não há recuperação de senha.";
+  const { data, error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    if (error.code === "same_password") return "Use uma senha diferente da anterior.";
+    if (error.code === "weak_password") return "Senha fraca: use pelo menos 8 caracteres, misturando letras e números.";
+    return "Não foi possível salvar a senha. Peça um novo link e tente de novo.";
+  }
+  return (await adopt(data.user.email)) ? null : "Senha salva, mas este acesso não tem permissão para o painel.";
 }

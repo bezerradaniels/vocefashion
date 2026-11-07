@@ -9,7 +9,17 @@ import { HomePage } from "@/routes/home";
 import { ProductPage } from "@/routes/product";
 import { CheckoutPage } from "@/routes/checkout";
 import { NotFoundPage } from "@/routes/not-found";
-import { ROUTER_BASENAME } from "@/lib/asset";
+import { pageUrl, ROUTER_BASENAME } from "@/lib/asset";
+
+// Link de recuperação de senha que caiu em outra página da loja (ex.: Site URL do Supabase na raiz):
+// leva para a tela de nova senha mantendo o token (#access_token=…&type=recovery).
+{
+  const { hash, pathname } = window.location;
+  const recovery = pageUrl("/admin/nova-senha");
+  if (/[#&](type=recovery|error_code=)/.test(hash) && !pathname.startsWith(recovery)) {
+    window.location.replace(recovery + hash);
+  }
+}
 
 const router = createBrowserRouter(
   [

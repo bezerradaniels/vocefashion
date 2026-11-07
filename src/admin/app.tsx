@@ -8,6 +8,7 @@ import { CategoriesPage } from "@/admin/pages/categories";
 import { CouponsPage } from "@/admin/pages/coupons";
 import { DashboardPage } from "@/admin/pages/dashboard";
 import { LoginPage } from "@/admin/pages/login";
+import { NewPasswordPage } from "@/admin/pages/new-password";
 import { OrderDetailPage } from "@/admin/pages/order-detail";
 import { OrdersPage } from "@/admin/pages/orders";
 import { ProductFormPage } from "@/admin/pages/product-form";
@@ -20,6 +21,7 @@ export function AdminApp() {
     <>
       <Routes>
         <Route path="login" element={<LoginPage />} />
+        <Route path="nova-senha" element={<NewPasswordPage />} />
         <Route
           element={
             <RequireAuth>

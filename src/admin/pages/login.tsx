@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
-import { login, useAdminSession } from "@/admin/auth";
+import { login, requestPasswordReset, useAdminSession } from "@/admin/auth";
 import { DEMO_ADMIN } from "@/admin/demo-credentials";
 import { DEMO_MODE } from "@/lib/db";
 import { Button, TextField } from "@/admin/ui";
@@ -20,12 +20,27 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // "forgot": pede só o e-mail e envia o link para criar uma nova senha.
+  const [mode, setMode] = useState<"login" | "forgot">("login");
+  const [sent, setSent] = useState(false);
 
   if (session) return <Navigate to={from} replace />;
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
+    if (mode === "forgot") {
+      if (!/^\S+@\S+\.\S{2,}$/.test(email.trim())) {
+        setError("Informe o e-mail de acesso ao painel.");
+        return;
+      }
+      setBusy(true);
+      const err = await requestPasswordReset(email);
+      setBusy(false);
+      if (err) setError(err);
+      else setSent(true);
+      return;
+    }
     if (!email.trim() || !password) {
       setError("Preencha e-mail e senha.");
       return;
@@ -69,24 +84,45 @@ export function LoginPage() {
               setError("");
             }}
           />
-          <TextField
-            label="Senha"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError("");
-            }}
-          />
+          {mode === "login" && (
+            <TextField
+              label="Senha"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+            />
+          )}
+          {sent && (
+            <p role="status" className="rounded-field bg-ok-tint px-3 py-2.5 text-[13px] text-ok">
+              Se este e-mail tiver acesso ao painel, enviamos um link para criar uma nova senha. Confira também o
+              spam.
+            </p>
+          )}
           {error && (
             <p role="alert" className="text-[13px] font-medium text-error">
               {error}
             </p>
           )}
           <Button type="submit" className="mt-1 w-full" disabled={busy}>
-            {busy ? "Entrando…" : "Entrar"}
+            {mode === "forgot" ? (busy ? "Enviando…" : "Enviar link") : busy ? "Entrando…" : "Entrar"}
           </Button>
+          {!DEMO_MODE && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === "login" ? "forgot" : "login");
+                setError("");
+                setSent(false);
+              }}
+              className="self-center text-[14px] font-semibold text-charcoal underline underline-offset-[3px]"
+            >
+              {mode === "login" ? "Esqueci minha senha" : "Voltar para o login"}
+            </button>
+          )}
         </form>
 
         {DEMO_MODE && (
