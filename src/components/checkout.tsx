@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { formatMinutes, shippingOptions } from "@/data/catalog";
+import { shippingOptions } from "@/data/catalog";
 import { FloatingField } from "@/components/field";
 import {
   BackIcon,
   CardIcon,
   CheckIcon,
   ChevronDownIcon,
-  LockIcon,
   PixIcon,
+  WhatsAppIcon,
 } from "@/components/icons";
 import { cx } from "@/lib/cx";
 import {
@@ -18,8 +18,9 @@ import {
   QtyStepper,
   SecondaryButton,
 } from "@/components/ui";
-import { dbActions, DEMO_MODE, errorMessage, useSettings, type CouponCheck } from "@/lib/db";
-import { brl, digits, isValidCpf, MASKS, type MaskName } from "@/lib/format";
+import { dbActions, errorMessage, useSettings, type CouponCheck } from "@/lib/db";
+import { orderMessage } from "@/lib/order-message";
+import { brl, digits, isValidCpf, MASKS, whatsappUrl, type MaskName } from "@/lib/format";
 import { useGoBack } from "@/lib/navigation";
 import { actions, useBagLines } from "@/lib/store";
 
@@ -33,10 +34,6 @@ type FieldKey =
   | "num"
   | "bairro"
   | "comp"
-  | "cartao"
-  | "titular"
-  | "validade"
-  | "cvv"
   | "cupom";
 type Errors = Partial<Record<FieldKey, string>>;
 type Step = 1 | 2 | 3;
@@ -46,9 +43,6 @@ const MASK_FOR: Partial<Record<FieldKey, MaskName>> = {
   cel: "cel",
   cpf: "cpf",
   cep: "cep",
-  cartao: "card",
-  validade: "expiry",
-  cvv: "cvv",
 };
 
 export function Checkout() {
@@ -74,8 +68,16 @@ export function Checkout() {
   const [couponBusy, setCouponBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(true);
-  const [success, setSuccess] = useState<{ pay: Pay; total: number; order: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  // Por onde a cliente manda o resumo: WhatsApp da loja ou, sem ele, o Direct do Instagram.
+  const instagram = settings.instagram.replace(/^@/, "");
+  const contact = settings.phone
+    ? ({ kind: "whatsapp" } as const)
+    : instagram
+      ? ({ kind: "instagram", user: instagram } as const)
+      : null;
+  // Pedido registrado: número, total oficial e o resumo para enviar à loja.
+  const [success, setSuccess] = useState<{ total: number; order: string; message: string } | null>(null);
   const [orderError, setOrderError] = useState("");
 
   // Forma de pagamento desativada no admin não pode ficar selecionada.
@@ -147,13 +149,6 @@ export function Checkout() {
         if (!v("num").trim()) e.num = "Informe o nº";
         if (!v("bairro").trim()) e.bairro = "Informe o bairro";
       }
-    }
-    // Sem gateway ainda: no Supabase, o cartão é cobrado por link enviado pela loja (não pedimos os dados aqui).
-    if (n === 3 && pay === "card" && DEMO_MODE) {
-      if (digits(v("cartao")).length < 16) e.cartao = "Número incompleto";
-      if (!v("titular").trim()) e.titular = "Como está no cartão";
-      if (digits(v("validade")).length !== 4) e.validade = "MM/AA";
-      if (digits(v("cvv")).length < 3) e.cvv = "3 dígitos";
     }
     return e;
   }
@@ -233,7 +228,8 @@ export function Checkout() {
       }
     }
     if (!shipSel) return;
-    // TODO produção: criar o pedido no backend e gerar a cobrança (Pix/cartão) no gateway.
+    // Não há cobrança no site: o pedido fica registrado (e as peças reservadas) e o pagamento é
+    // combinado com a loja pelo WhatsApp, Instagram ou painel. "payment" é só a preferência da cliente.
     let receipt;
     setSubmitting(true);
     try {
@@ -275,7 +271,28 @@ export function Checkout() {
     setDone({ 1: true, 2: true, 3: true });
     setOpen(0);
     // No Supabase, o total oficial é o calculado pelo servidor.
-    setSuccess({ pay, total: receipt.total, order: receipt.number });
+    setSuccess({
+      total: receipt.total,
+      order: receipt.number,
+      message: orderMessage({
+        number: receipt.number,
+        nome: v("nome").trim(),
+        items: lines.map((l) => ({ name: l.product.name, size: l.size, qty: l.qty, price: l.product.price })),
+        subtotal,
+        shippingName: shipSel.name,
+        shippingCost: frete ?? 0,
+        pickup: shipSel.pickup,
+        address: [`${v("rua").trim()}, ${v("num").trim()}`, v("comp").trim(), v("bairro").trim(), v("cep")]
+          .filter(Boolean)
+          .join(" · "),
+        couponCode: couponResult?.ok ? couponResult.code : null,
+        couponDiscount,
+        pixDiscount: pixDisc,
+        total: receipt.total,
+        payment: pay,
+        installments: INSTALLMENTS,
+      }),
+    });
     actions.clearBag();
   }
 
@@ -304,8 +321,8 @@ export function Checkout() {
         </IconButton>
         <h1 className="font-display text-[19px] font-semibold">Finalizar pedido</h1>
         <span className="flex items-center gap-[5px] text-[12px] font-medium text-body-2">
-          <LockIcon size={16} />
-          Compra segura
+          <WhatsAppIcon size={16} />
+          Pague no WhatsApp
         </span>
       </header>
 
@@ -470,7 +487,11 @@ export function Checkout() {
         {/* 3. Pagamento */}
         <StepCard n={3} title="Pagamento" {...stepState(3)} summary={s3Summary} onToggle={() => toggleStep(3)}>
           <div className="flex flex-col gap-2.5">
-            <div className="flex flex-col gap-2.5" role="radiogroup" aria-label="Forma de pagamento">
+            <p className="text-[13px] leading-[18px] text-body-2">
+              Nada é cobrado no site. Escolha como prefere pagar: você combina o pagamento com a loja pelo WhatsApp
+              depois de enviar o pedido.
+            </p>
+            <div className="flex flex-col gap-2.5" role="radiogroup" aria-label="Forma de pagamento preferida">
               {pix.enabled && (
               <RadioCard
                 selected={pay === "pix"}
@@ -484,18 +505,14 @@ export function Checkout() {
                 <span className="flex flex-col gap-[3px]">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-[15px] font-semibold">Pix</span>
-                    <span className="rounded-full bg-copper-ink px-1.5 py-1 text-[10px] leading-none font-semibold tracking-[.06em] text-white uppercase">
-                      Recomendado
-                    </span>
+                    {PIX_PCT > 0 && (
+                      <span className="rounded-full bg-copper-ink px-1.5 py-1 text-[10px] leading-none font-semibold tracking-[.06em] text-white uppercase">
+                        {PIX_PCT}% off
+                      </span>
+                    )}
                   </span>
                   <span className="text-[13px] leading-[18px] text-body-2">
-                    {DEMO_MODE
-                      ? PIX_PCT
-                        ? `${PIX_PCT}% de desconto · aprovação na hora`
-                        : "Aprovação na hora"
-                      : PIX_PCT
-                        ? `${PIX_PCT}% de desconto`
-                        : "Chave Pix enviada pelo WhatsApp"}
+                    {PIX_PCT ? `${PIX_PCT}% de desconto no total` : "Chave Pix enviada pela loja"}
                   </span>
                 </span>
               </RadioCard>
@@ -510,57 +527,16 @@ export function Checkout() {
                 <span className="flex flex-col gap-[3px]">
                   <span className="text-[15px] font-semibold">Cartão de crédito</span>
                   <span className="text-[13px] leading-[18px] text-body-2">
-                    {INSTALLMENTS > 1 ? `Até ${INSTALLMENTS}x de ${brl(installment)} sem juros` : "À vista"}
+                    {INSTALLMENTS > 1 ? `Até ${INSTALLMENTS}x de ${brl(installment)} sem juros` : "À vista"} · link
+                    enviado pela loja
                   </span>
                 </span>
               </RadioCard>
               )}
               {noPayment && (
-                <p className="text-[14px] text-error">Pagamento online indisponível no momento. Fale com a loja.</p>
+                <p className="text-[14px] text-error">Pedidos pelo site indisponíveis no momento. Fale com a loja.</p>
               )}
             </div>
-            {pay === "card" && !DEMO_MODE && (
-              <p className="mt-1 text-[13px] leading-[18px] text-body-2">
-                Você recebe o link de pagamento do cartão pelo WhatsApp, depois de finalizar o pedido.
-              </p>
-            )}
-            {pay === "card" && DEMO_MODE && (
-              <div className="mt-1 grid grid-cols-2 gap-3">
-                <FloatingField
-                  label="Número do cartão"
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="0000 0000 0000 0000"
-                  autoComplete="cc-number"
-                  {...field("cartao")}
-                />
-                <FloatingField label="Nome impresso no cartão" autoComplete="cc-name" {...field("titular")} />
-                <FloatingField
-                  label="Validade"
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="MM/AA"
-                  autoComplete="cc-exp"
-                  span={1}
-                  {...field("validade")}
-                />
-                <FloatingField
-                  label="CVV"
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="123"
-                  autoComplete="cc-csc"
-                  span={1}
-                  {...field("cvv")}
-                />
-              </div>
-            )}
-            {DEMO_MODE && (
-              <div className="flex items-center gap-2 pt-1.5 text-[12px] leading-4 text-body-2">
-                <LockIcon size={16} className="flex-none" />
-                Pagamento criptografado. Não guardamos os dados do seu cartão.
-              </div>
-            )}
           </div>
         </StepCard>
 
@@ -644,7 +620,7 @@ export function Checkout() {
           </span>
         </div>
         <PrimaryButton type="button" onClick={finish} disabled={!lines.length || noPayment || overStock || submitting}>
-          {submitting ? "Enviando pedido…" : "Finalizar Compra"}
+          {submitting ? "Enviando pedido…" : "Enviar pedido"}
         </PrimaryButton>
       </div>
 
@@ -660,32 +636,37 @@ export function Checkout() {
             <CheckIcon size={28} />
           </span>
           <h2 id="success-title" className="font-display text-[30px] leading-9 font-bold tracking-[-.02em]">
-            {DEMO_MODE ? (success.pay === "pix" ? "Quase lá!" : "Pedido confirmado!") : "Pedido recebido!"}
+            Pedido registrado!
           </h2>
           <p className="text-[15px] leading-[22px] text-pretty text-body-2">
-            {DEMO_MODE
-              ? success.pay === "pix"
-                ? `Pague ${brl(success.total)} com o Pix para confirmar seu pedido #${success.order}. Enviamos os detalhes no seu WhatsApp.`
-                : `Pagamento aprovado. Pedido #${success.order} — acompanhe tudo pelo WhatsApp.`
-              : // TODO produção: com o gateway, mostrar o QR Code Pix / aprovação do cartão aqui.
-                `Seu pedido #${success.order} de ${brl(success.total)} foi registrado. A loja vai falar com você pelo WhatsApp para confirmar o pagamento${success.pay === "pix" ? " via Pix" : ""} e a entrega.` +
-                (success.pay === "pix" && pix.expiryMinutes > 0
-                  ? ` Pague em até ${formatMinutes(pix.expiryMinutes)}: depois disso o pedido é cancelado e as peças voltam para a loja.`
-                  : "")}
+            {`Seu pedido #${success.order} de ${brl(success.total)} está reservado. `}
+            {contact
+              ? "Agora envie o resumo para a loja e combine o pagamento e a entrega."
+              : "A loja vai falar com você pelo celular informado para combinar o pagamento e a entrega."}
           </p>
-          {DEMO_MODE && success.pay === "pix" && (
+          {contact?.kind === "whatsapp" && (
+            <a
+              href={whatsappUrl(settings.phone, success.message)}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-[54px] w-full items-center justify-center gap-2.5 rounded-full bg-copper text-[16px] font-semibold text-white hover:bg-copper-hover"
+            >
+              <WhatsAppIcon size={22} />
+              Enviar pedido no WhatsApp
+            </a>
+          )}
+          {contact?.kind === "instagram" && (
             <>
-              {/* TODO produção: QR Code e código copia-e-cola vindos do gateway de pagamento. */}
-              <div
-                className="flex size-[184px] items-center justify-center rounded-card border border-line"
-                style={{ background: "repeating-linear-gradient(135deg,#F3F3F3 0 6px,#EAEAEA 6px 12px)" }}
+              <PrimaryButton
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(success.message).catch(() => {});
+                  setCopied(true);
+                  window.open(`https://ig.me/m/${contact.user}`, "_blank", "noreferrer");
+                }}
               >
-                <span className="font-mono text-[10px] tracking-[.08em] text-muted uppercase">QR Code Pix</span>
-              </div>
-              <PrimaryButton type="button" className="h-[52px]" onClick={() => setCopied(true)}>
-                {copied ? "Código copiado ✓" : "Copiar código Pix"}
+                {copied ? "Resumo copiado ✓ — cole no Direct" : "Copiar resumo e abrir o Instagram"}
               </PrimaryButton>
-              <span className="text-[13px] text-muted">O código expira em 30 minutos.</span>
             </>
           )}
           <SecondaryButton type="button" className="mt-auto" onClick={() => navigate("/")}>

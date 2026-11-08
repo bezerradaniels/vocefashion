@@ -292,7 +292,8 @@ export const SEED_SETTINGS: Settings = {
   instagram: "",
   address: "Centro · Bom Jesus da Lapa — BA",
   payments: {
-    pix: { enabled: true, discountPercent: 5, expiryMinutes: 120 },
+    // Pagamento combinado pelo WhatsApp: a loja decide quando cancelar (0 = não cancela sozinho).
+    pix: { enabled: true, discountPercent: 5, expiryMinutes: 0 },
     card: { enabled: true, installments: 3 },
   },
   shipping: {

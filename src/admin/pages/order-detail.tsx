@@ -103,7 +103,7 @@ export function OrderDetailPage() {
                 label="Alterar situação"
                 value={order.status}
                 onChange={(e) => changeStatus(e.target.value as OrderStatus)}
-                hint={'Cancelar devolve as peças ao estoque. Ao receber o Pix, mude para "Pago".'}
+                hint={'Cancelar devolve as peças ao estoque. Ao receber o pagamento, mude para "Pago".'}
               >
                 {ORDER_STATUSES.map((s) => (
                   <option key={s} value={s}>
@@ -135,7 +135,7 @@ export function OrderDetailPage() {
 
           <Card title="Pagamento">
             <dl className="flex flex-col gap-1.5 text-[14px]">
-              <Row label="Forma" value={order.payment === "pix" ? "Pix" : "Cartão de crédito"} />
+              <Row label="Preferência" value={order.payment === "pix" ? "Pix" : "Cartão de crédito"} />
               {order.couponCode && <Row label="Cupom" value={order.couponCode} />}
             </dl>
           </Card>

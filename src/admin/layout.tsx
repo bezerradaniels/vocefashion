@@ -66,7 +66,7 @@ export function AdminLayout() {
       <aside
         aria-label="Menu do painel"
         className={cx(
-          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-white transition-transform duration-200",
+          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-panel-side transition-transform duration-200",
           "lg:translate-x-0",
           menuOpen ? "translate-x-0" : "-translate-x-full",
         )}
@@ -114,7 +114,6 @@ export function AdminLayout() {
       </aside>
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <DemoNotice />
         <Outlet />
       </main>
     </div>
@@ -143,7 +142,7 @@ function NavItem({
       className={({ isActive }) =>
         cx(
           "flex h-11 items-center gap-3 rounded-full px-3 text-[14px] font-medium",
-          isActive ? "bg-charcoal text-white" : "text-charcoal hover:bg-icon-btn",
+          isActive ? "bg-copper-ink text-white" : "text-charcoal hover:bg-copper-tint [&_svg]:text-copper-ink",
         )
       }
     >
@@ -152,7 +151,7 @@ function NavItem({
       {to === "/admin/pedidos" && waiting > 0 && (
         <span
           title={`${waiting} aguardando pagamento`}
-          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-copper-ink px-1.5 text-[11px] font-semibold text-white"
+          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-warn px-1.5 text-[11px] font-semibold text-white ring-2 ring-white"
         >
           {waiting}
         </span>
@@ -174,14 +173,5 @@ function LogoutButton() {
       <LogoutIcon size={20} />
       Sair
     </button>
-  );
-}
-
-function DemoNotice() {
-  return (
-    <p className="mb-5 rounded-card border border-line bg-white px-4 py-2.5 text-[13px] text-body-2">
-      <strong className="font-semibold text-charcoal">Modo demonstração:</strong> as alterações ficam salvas
-      só neste navegador e aparecem na loja aberta nele.
-    </p>
   );
 }

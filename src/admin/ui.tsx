@@ -1,6 +1,7 @@
 import { useId, type ComponentProps, type ReactNode } from "react";
 import { Link } from "react-router";
 import { ORDER_STATUS_LABEL, type OrderStatus } from "@/data/catalog";
+import { DOT, STATUS_TONE, TONE, type Tone } from "@/admin/tones";
 import { cx } from "@/lib/cx";
 
 /* Componentes do painel. Mesmos tokens da loja (cobre, carvão, alabastro, cantos
@@ -51,7 +52,7 @@ export function Card({
   return (
     <section className={cx("rounded-card border border-line bg-white", className)}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-2 border-b border-line px-4 py-3.5 sm:px-5">
+        <header className="flex flex-wrap items-start justify-between gap-2 rounded-t-card border-b border-line bg-copper-tint/60 px-4 py-3.5 sm:px-5">
           <div className="flex flex-col gap-0.5">
             {title && <h2 className="text-[15px] font-semibold">{title}</h2>}
             {description && <p className="text-[13px] text-muted">{description}</p>}
@@ -266,16 +267,6 @@ export function Toggle({
   );
 }
 
-type Tone = "neutral" | "copper" | "ok" | "info" | "danger" | "dark";
-const TONE: Record<Tone, string> = {
-  neutral: "bg-chip text-charcoal",
-  copper: "bg-copper-tint text-copper-active",
-  ok: "bg-ok-tint text-ok",
-  info: "bg-info-tint text-info",
-  danger: "bg-error-tint text-error",
-  dark: "bg-charcoal text-white",
-};
-
 export function Badge({ tone = "neutral", children }: { tone?: Tone; children: ReactNode }) {
   return (
     <span
@@ -288,15 +279,6 @@ export function Badge({ tone = "neutral", children }: { tone?: Tone; children: R
     </span>
   );
 }
-
-const STATUS_TONE: Record<OrderStatus, Tone> = {
-  aguardando_pagamento: "copper",
-  pago: "info",
-  em_separacao: "neutral",
-  enviado: "dark",
-  entregue: "ok",
-  cancelado: "danger",
-};
 
 export function StatusBadge({ status }: { status: OrderStatus }) {
   return <Badge tone={STATUS_TONE[status]}>{ORDER_STATUS_LABEL[status]}</Badge>;
@@ -320,7 +302,7 @@ export function Tabs<T extends string>({
 }: {
   value: T;
   onChange: (v: T) => void;
-  items: { value: T; label: string; count?: number }[];
+  items: { value: T; label: string; count?: number; tone?: Tone }[];
   label: string;
 }) {
   return (
@@ -336,9 +318,17 @@ export function Tabs<T extends string>({
             onClick={() => onChange(it.value)}
             className={cx(
               "flex h-9 flex-none items-center gap-1.5 rounded-full border px-3.5 text-[14px] font-medium whitespace-nowrap",
-              active ? "border-charcoal bg-charcoal text-white" : "border-line bg-white text-charcoal hover:border-charcoal",
+              active
+                ? "border-copper-ink bg-copper-ink text-white"
+                : "border-line bg-white text-charcoal hover:border-copper hover:bg-copper-tint",
             )}
           >
+            {it.tone && (
+              <span
+                aria-hidden="true"
+                className={cx("size-2 rounded-full", active ? "bg-white" : DOT[it.tone])}
+              />
+            )}
             {it.label}
             {it.count !== undefined && (
               <span className={cx("text-[12px]", active ? "text-white/75" : "text-muted")}>{it.count}</span>
