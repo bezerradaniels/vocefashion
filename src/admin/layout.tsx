@@ -114,7 +114,6 @@ export function AdminLayout() {
       </aside>
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <DemoNotice />
         <Outlet />
       </main>
     </div>
@@ -174,14 +173,5 @@ function LogoutButton() {
       <LogoutIcon size={20} />
       Sair
     </button>
-  );
-}
-
-function DemoNotice() {
-  return (
-    <p className="mb-5 rounded-card border border-line bg-white px-4 py-2.5 text-[13px] text-body-2">
-      <strong className="font-semibold text-charcoal">Modo demonstração:</strong> as alterações ficam salvas
-      só neste navegador e aparecem na loja aberta nele.
-    </p>
   );
 }
