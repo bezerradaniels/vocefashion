@@ -153,7 +153,7 @@ export function StoreSettingsPage() {
               placeholder="(77) 99999-9999"
               value={form.phone}
               error={errors.phone}
-              hint="Vira o botão de WhatsApp no rodapé da loja."
+              hint="Para onde as clientes enviam o pedido depois de finalizar no site (e botão no rodapé)."
               onChange={(e) => set("phone", formatPhone(e.target.value))}
             />
             <TextField
@@ -168,14 +168,14 @@ export function StoreSettingsPage() {
           </div>
         </Card>
 
-        <Card title="Formas de pagamento" description="O que a cliente pode escolher no checkout.">
+        <Card title="Formas de pagamento" description="Preferências que a cliente indica ao enviar o pedido. Nada é cobrado no site: o pagamento é combinado pelo WhatsApp, Instagram ou aqui no painel.">
           <div className="grid gap-5 md:grid-cols-2">
             <div className="flex flex-col gap-3 rounded-card border border-line p-4">
               <Toggle
                 checked={form.payments.pix.enabled}
                 onChange={(v) => setPay({ enabled: v }, "pix")}
                 label="Pix"
-                description="Aprovação na hora. Aparece como recomendado."
+                description="O desconto aparece nos valores da loja e do pedido."
               />
               <TextField
                 label="Desconto no Pix (%)"
@@ -211,7 +211,7 @@ export function StoreSettingsPage() {
                 checked={form.payments.card.enabled}
                 onChange={(v) => setPay({ enabled: v }, "card")}
                 label="Cartão de crédito"
-                description="Parcelado sem juros."
+                description="As parcelas aparecem como informação; a loja envia o link de pagamento."
               />
               <Select
                 label="Parcelas sem juros"
