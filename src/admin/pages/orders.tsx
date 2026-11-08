@@ -4,6 +4,7 @@ import { ORDER_STATUSES, ORDER_STATUS_LABEL, type OrderStatus } from "@/data/cat
 import { Card, EmptyState, PageHeader, StatusBadge, Tabs } from "@/admin/ui";
 import { SearchIcon } from "@/components/icons";
 import { useOrders } from "@/lib/db";
+import { STATUS_TONE } from "@/admin/tones";
 import { brl } from "@/lib/format";
 import { useTitle } from "@/lib/title";
 
@@ -44,7 +45,7 @@ export function OrdersPage() {
           onChange={(v) => setParams(v === "todos" ? {} : { status: v }, { replace: true })}
           items={[
             { value: "todos", label: "Todos", count: counts.todos },
-            ...ORDER_STATUSES.map((s) => ({ value: s, label: ORDER_STATUS_LABEL[s], count: counts[s] })),
+            ...ORDER_STATUSES.map((s) => ({ value: s, label: ORDER_STATUS_LABEL[s], count: counts[s], tone: STATUS_TONE[s] })),
           ]}
         />
         <label className="relative block max-w-sm">

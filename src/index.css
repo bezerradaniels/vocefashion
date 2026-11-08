@@ -27,12 +27,20 @@
   --color-ph-b: #e7e1da;
   --color-backdrop: #efeeec;
 
-  /* Status (admin) */
-  --color-ok: #3f7d5a;
+  /* Status e cores de apoio (painel). Texto sobre o tom claro: contraste ≥ 4,5 (WCAG AA). */
+  --color-ok: #35704f;
   --color-ok-tint: #edf5f0;
   --color-info: #3d6a99;
   --color-info-tint: #eef3f9;
   --color-error-tint: #f8ece8;
+  --color-warn: #8a5a00;
+  --color-warn-tint: #fdf3e1;
+  --color-violet: #6a4c9c;
+  --color-violet-tint: #f1ecf9;
+  --color-teal: #1d6b66;
+  --color-teal-tint: #e5f3f1;
+  /* Fundo da barra lateral do painel (alabastro quente). */
+  --color-panel-side: #fbf6f2;
 
   --radius-thumb: 12px;
   --radius-field: 14px;

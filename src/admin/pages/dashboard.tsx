@@ -1,7 +1,10 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import { Link } from "react-router";
 import { SIZES, type Order } from "@/data/catalog";
 import { Badge, Card, EmptyState, PageHeader, StatusBadge, Tabs } from "@/admin/ui";
+import { DOT, TONE, type Tone } from "@/admin/tones";
+import { ArrowUpIcon, CardIcon, ReceiptIcon, TicketIcon } from "@/components/icons";
+import { cx } from "@/lib/cx";
 import { useOrders, useProducts } from "@/lib/db";
 import { brl } from "@/lib/format";
 import { useTitle } from "@/lib/title";
@@ -87,10 +90,12 @@ export function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Faturamento" value={brl(data.revenue)} caption="Pedidos pagos no período" />
-        <StatTile label="Pedidos pagos" value={String(data.paidCount)} caption="Sem contar cancelados" />
-        <StatTile label="Ticket médio" value={brl(data.ticket)} caption="Faturamento ÷ pedidos" />
+        <StatTile tone="ok" icon={ArrowUpIcon} label="Faturamento" value={brl(data.revenue)} caption="Pedidos pagos no período" />
+        <StatTile tone="info" icon={ReceiptIcon} label="Pedidos pagos" value={String(data.paidCount)} caption="Sem contar cancelados" />
+        <StatTile tone="violet" icon={TicketIcon} label="Ticket médio" value={brl(data.ticket)} caption="Faturamento ÷ pedidos" />
         <StatTile
+          tone="warn"
+          icon={CardIcon}
           label="Aguardando pagamento"
           value={String(data.waitingCount)}
           caption={data.waitingCount ? `${brl(data.waitingValue)} a receber` : "Nenhum pendente"}
@@ -156,7 +161,7 @@ export function DashboardPage() {
                       <span className="min-w-0 truncate text-[14px]">
                         {p.name} <span className="text-muted">· {size}</span>
                       </span>
-                      {qty === 0 ? <Badge tone="danger">Esgotado</Badge> : <Badge tone="copper">Última peça</Badge>}
+                      {qty === 0 ? <Badge tone="danger">Esgotado</Badge> : <Badge tone="warn">Última peça</Badge>}
                     </Link>
                   </li>
                 ))}
@@ -191,15 +196,36 @@ export function DashboardPage() {
   );
 }
 
-function StatTile({ label, value, caption, to }: { label: string; value: string; caption: string; to?: string }) {
+/** Indicador: ícone num círculo colorido e faixa da mesma cor no topo. */
+function StatTile({
+  label,
+  value,
+  caption,
+  to,
+  tone,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  caption: string;
+  to?: string;
+  tone: Tone;
+  icon: ComponentType<{ size?: number }>;
+}) {
   const body = (
     <>
-      <span className="text-[13px] font-medium text-body-2">{label}</span>
+      <span aria-hidden="true" className={cx("absolute inset-x-0 top-0 h-1", DOT[tone])} />
+      <span className="flex items-center justify-between gap-2">
+        <span className="text-[13px] font-medium text-body-2">{label}</span>
+        <span aria-hidden="true" className={cx("flex size-8 flex-none items-center justify-center rounded-full", TONE[tone])}>
+          <Icon size={17} />
+        </span>
+      </span>
       <span className="text-[22px] leading-7 font-semibold tracking-[-.01em] sm:text-[26px] sm:leading-8">{value}</span>
       <span className="text-[12px] text-muted">{caption}</span>
     </>
   );
-  const cls = "flex flex-col gap-1 rounded-card border border-line bg-white p-4";
+  const cls = "relative flex flex-col gap-1 overflow-hidden rounded-card border border-line bg-white p-4";
   return to ? (
     <Link to={to} className={`${cls} hover:border-charcoal`}>
       {body}
