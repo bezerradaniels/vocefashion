@@ -1,0 +1,12 @@
+# Gerado no build (vite.config.ts). SPA: rotas sem arquivo abrem o index.html.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  # Páginas de produto geradas no build (prévia no WhatsApp/Instagram): /produto/x → produto/x.html
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+)$ $1.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
