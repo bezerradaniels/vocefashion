@@ -85,18 +85,9 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 
 ### Deploy automático na Hostinger (vocefashion.com.br)
 
-O workflow `.github/workflows/deploy-hostinger.yml` faz o build da raiz (`npm run build`) e envia `dist/` por FTP a cada push na `main` (ou manualmente em Actions → *Deploy na Hostinger* → *Run workflow*).
+A Hostinger (hPanel → Sites → vocefashion.com.br → Avançado → GIT) copia os arquivos da branch para `public_html` **sem rodar build**. Por isso, o workflow `.github/workflows/deploy-hostinger.yml` faz o `npm run build` a cada push na `main` e publica só o conteúdo de `dist/` (com o `.htaccess`) na branch **`deploy`**.
 
-Configure uma vez em GitHub → Settings → Secrets and variables → Actions → *New repository secret*:
-
-| Secret | Valor (hPanel → Arquivos → Contas FTP) |
-|---|---|
-| `FTP_SERVER` | host FTP (ex.: `ftp.vocefashion.com.br` ou o IP mostrado no hPanel) |
-| `FTP_USERNAME` | usuário FTP |
-| `FTP_PASSWORD` | senha FTP |
-| `FTP_DIR` | (opcional) pasta do site; padrão `public_html/`. Termina com `/` |
-
-Se o FTPS der erro de conexão, troque `protocol: ftps` por `ftp` no workflow.
+Configuração única: no hPanel, na tela GIT, troque a branch acompanhada de `main` para `deploy` (mantendo a implantação automática e o diretório `public_html`). Depois, cada merge na `main` atualiza o site sozinho. Também dá para rodar à mão em Actions → *Build para a Hostinger* → *Run workflow*.
 
 ## Pendências para produção
 
