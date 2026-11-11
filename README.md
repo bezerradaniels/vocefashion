@@ -83,6 +83,21 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 - O build gera um `.htaccess` (Apache/LiteSpeed, ex.: Hostinger) com a pasta certa, para que `/produto/...`, `/checkout` e `/admin` abram ao recarregar. Ele é um arquivo oculto: confira se foi enviado.
 - **Prévia de links (WhatsApp, Instagram) e Google:** `vite/seo.ts` coloca título, descrição e tags Open Graph no `index.html` e gera `produto/<slug>.html` para cada peça do catálogo inicial (foto, preço e dados estruturados de Product). O domínio vem de `VITE_SITE_URL` em `.env.production` (build da raiz) e `.env.mintcode` (build da subpasta): **confirme o domínio definitivo** antes de publicar. A foto de compartilhamento de cada peça é `public/produtos/<slug>/og.jpg` (JPG 600×800); a da home é `public/og-home.jpg`.
 
+### Deploy automático na Hostinger (vocefashion.com.br)
+
+O workflow `.github/workflows/deploy-hostinger.yml` faz o build da raiz (`npm run build`) e envia `dist/` por FTP a cada push na `main` (ou manualmente em Actions → *Deploy na Hostinger* → *Run workflow*).
+
+Configure uma vez em GitHub → Settings → Secrets and variables → Actions → *New repository secret*:
+
+| Secret | Valor (hPanel → Arquivos → Contas FTP) |
+|---|---|
+| `FTP_SERVER` | host FTP (ex.: `ftp.vocefashion.com.br` ou o IP mostrado no hPanel) |
+| `FTP_USERNAME` | usuário FTP |
+| `FTP_PASSWORD` | senha FTP |
+| `FTP_DIR` | (opcional) pasta do site; padrão `public_html/`. Termina com `/` |
+
+Se o FTPS der erro de conexão, troque `protocol: ftps` por `ftp` no workflow.
+
 ## Pendências para produção
 
 - **Fotos antigas no Storage:** remover uma foto no painel não apaga o arquivo do bucket (só deixa de ser usado).
