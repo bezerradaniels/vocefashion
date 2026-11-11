@@ -83,6 +83,12 @@ Projeto: [`vigxmmeiqjhbcujvsjge`](https://supabase.com/dashboard/project/vigxmme
 - O build gera um `.htaccess` (Apache/LiteSpeed, ex.: Hostinger) com a pasta certa, para que `/produto/...`, `/checkout` e `/admin` abram ao recarregar. Ele é um arquivo oculto: confira se foi enviado.
 - **Prévia de links (WhatsApp, Instagram) e Google:** `vite/seo.ts` coloca título, descrição e tags Open Graph no `index.html` e gera `produto/<slug>.html` para cada peça do catálogo inicial (foto, preço e dados estruturados de Product). O domínio vem de `VITE_SITE_URL` em `.env.production` (build da raiz) e `.env.mintcode` (build da subpasta): **confirme o domínio definitivo** antes de publicar. A foto de compartilhamento de cada peça é `public/produtos/<slug>/og.jpg` (JPG 600×800); a da home é `public/og-home.jpg`.
 
+### Deploy automático na Hostinger (vocefashion.com.br)
+
+A Hostinger (hPanel → Sites → vocefashion.com.br → Avançado → GIT) copia os arquivos da branch para `public_html` **sem rodar build**. Por isso, o workflow `.github/workflows/deploy-hostinger.yml` faz o `npm run build` a cada push na `main` e publica só o conteúdo de `dist/` (com o `.htaccess`) na branch **`deploy`**.
+
+Configuração única: no hPanel, na tela GIT, troque a branch acompanhada de `main` para `deploy` (mantendo a implantação automática e o diretório `public_html`). Depois, cada merge na `main` atualiza o site sozinho. Também dá para rodar à mão em Actions → *Build para a Hostinger* → *Run workflow*.
+
 ## Pendências para produção
 
 - **Fotos antigas no Storage:** remover uma foto no painel não apaga o arquivo do bucket (só deixa de ser usado).
